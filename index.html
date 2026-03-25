@@ -17,6 +17,7 @@
       --sky:#7bb3d9;
       --sun:#f3c95a;
       --berry:#c76b5a;
+      --lav:#8978c8;
       --shadow:0 12px 30px rgba(42, 60, 46, 0.10);
       --radius:20px;
     }
@@ -29,9 +30,16 @@
       background: linear-gradient(180deg, #e9f6ef 0%, var(--bg1) 36%, var(--bg2) 100%);
     }
     .app{
-      max-width:1180px;
+      max-width:1220px;
       margin:0 auto;
       padding:18px;
+    }
+    .topbar{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      margin-bottom:12px;
+      flex-wrap:wrap;
     }
     .hero{
       background: linear-gradient(135deg, #4d7d52, #6f9a5f 48%, #8fc0d8);
@@ -72,7 +80,7 @@
     }
     .hero-stats{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:10px;
       margin-top:14px;
     }
@@ -114,12 +122,13 @@
       color:var(--muted);
       margin:0 0 14px;
     }
-    .grid-2, .grid-3{
+    .grid-2, .grid-3, .grid-4{
       display:grid;
       gap:12px;
     }
     .grid-2{ grid-template-columns:repeat(2, minmax(0,1fr)); }
     .grid-3{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+    .grid-4{ grid-template-columns:repeat(4, minmax(0,1fr)); }
 
     label{
       display:block;
@@ -163,6 +172,7 @@
     .btn-sky{ background:var(--sky); color:white; }
     .btn-sun{ background:var(--sun); color:#4d4216; }
     .btn-berry{ background:var(--berry); color:white; }
+    .btn-lav{ background:var(--lav); color:white; }
     .tiny{
       font-size:.9rem;
       color:var(--muted);
@@ -205,7 +215,7 @@
       transform:translateY(-2px);
     }
 
-    .mission-list, .gear-list, .wins-list, .recap-list{
+    .mission-list, .gear-list, .wins-list, .recap-list, .badge-list, .note-list{
       display:grid;
       gap:12px;
       margin-top:14px;
@@ -317,6 +327,44 @@
       background:#fbfdf9;
     }
 
+    .animal-guide{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:14px;
+      align-items:center;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid #dddaf5;
+      background:linear-gradient(180deg, #f8f5ff, #fdfcff);
+      margin-top:10px;
+    }
+    .animal-emoji{
+      font-size:2.6rem;
+    }
+    .animal-name{
+      font-size:1.2rem;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .badge-card{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:12px;
+      align-items:center;
+      border:1px solid #e3e8da;
+      border-radius:16px;
+      padding:12px;
+      background:#fbfcfa;
+    }
+    .badge-card.locked{
+      opacity:.55;
+      filter:grayscale(.2);
+    }
+    .badge-icon{
+      font-size:1.8rem;
+    }
+
     .notice{
       border-radius:16px;
       padding:12px 14px;
@@ -340,6 +388,42 @@
       text-align:center;
     }
 
+    .view{ display:none; }
+    .view.active{ display:block; }
+
+    .metric{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:#fbfdf9;
+    }
+    .metric strong{
+      display:block;
+      font-size:1.7rem;
+      margin-bottom:2px;
+    }
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:white;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:620px;
+    }
+    th, td{
+      padding:10px 12px;
+      text-align:left;
+      border-bottom:1px solid #e7eee4;
+      vertical-align:top;
+    }
+    th{
+      background:#f4f8f2;
+      font-size:.95rem;
+    }
+
     .footer-note{
       text-align:center;
       color:var(--muted);
@@ -348,189 +432,350 @@
     }
 
     @media (max-width: 920px){
-      .layout, .hero-grid, .grid-2, .grid-3{
+      .layout, .hero-grid, .grid-2, .grid-3, .grid-4{
         grid-template-columns:1fr;
       }
       .trail-strip{
         grid-template-columns:repeat(7, minmax(34px,1fr));
+      }
+      .hero-stats{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media print{
+      body{
+        background:white;
+      }
+      .topbar, #kidView .hero, #kidView .footer-note{
+        display:none !important;
+      }
+      #kidView{
+        display:none !important;
+      }
+      #adultView{
+        display:block !important;
+      }
+      .card{
+        box-shadow:none;
+        border:1px solid #cfcfcf;
+        break-inside:avoid;
+      }
+      button{
+        display:none !important;
+      }
+      .app{
+        max-width:none;
+        padding:0;
       }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <section class="hero">
-      <div class="hero-grid">
-        <div>
-          <h1>🌲 Trail Guide</h1>
-          <p>An outdoor adventure planner for kids. Pick up to three missions, pack your gear, go on a short expedition, and end the day with a campfire recap.</p>
-          <div class="hero-stats">
-            <div class="stat"><strong id="missionsDoneStat">0</strong><span>Missions Done</span></div>
-            <div class="stat"><strong id="starsStat">0</strong><span>Stars Earned</span></div>
-            <div class="stat"><strong id="streakStat">0</strong><span>Today’s Trail</span></div>
+    <div class="topbar">
+      <button class="btn-primary" id="showKidViewBtn">Kid View</button>
+      <button class="btn-lav" id="showAdultViewBtn">Parent / Teacher View</button>
+    </div>
+
+    <div id="kidView" class="view active">
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <h1>🌲 Trail Guide</h1>
+            <p>An outdoor adventure planner for kids. Pick up to three missions, pack your gear, go on a short expedition, and end the day with a campfire recap.</p>
+            <div class="hero-stats">
+              <div class="stat"><strong id="missionsDoneStat">0</strong><span>Missions Done</span></div>
+              <div class="stat"><strong id="starsStat">0</strong><span>Stars Earned</span></div>
+              <div class="stat"><strong id="streakStat">0</strong><span>Today’s Trail</span></div>
+              <div class="stat"><strong id="badgesStat">0</strong><span>Badges</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="badge">🧭 Adventure Mode On</div>
+            <div class="trail-strip" id="trailStrip"></div>
+            <p class="tiny">Each finished mission moves you farther down the trail.</p>
           </div>
         </div>
-        <div>
-          <div class="badge">🧭 Adventure Mode On</div>
-          <div class="trail-strip" id="trailStrip"></div>
-          <p class="tiny">Each finished mission moves you farther down the trail.</p>
+      </section>
+
+      <div class="layout">
+        <div class="stack">
+          <section class="card">
+            <h2>🐾 Today’s Trail</h2>
+            <p class="sub">Choose your most important missions for today. You can have up to 3.</p>
+
+            <div class="grid-3">
+              <div>
+                <label for="missionInput">Mission</label>
+                <input id="missionInput" type="text" maxlength="80" placeholder="Example: Reading, math page, tidy desk" />
+              </div>
+              <div>
+                <label for="whereInput">Best place</label>
+                <input id="whereInput" type="text" maxlength="50" placeholder="Desk, porch, kitchen table..." />
+              </div>
+              <div>
+                <label for="outdoorInput">Outdoor bonus</label>
+                <select id="outdoorInput">
+                  <option value="">Choose one</option>
+                  <option>🌿 Find something green first</option>
+                  <option>☀️ Take 3 deep breaths outside</option>
+                  <option>🍃 Open a window before starting</option>
+                  <option>🪨 Hold a nature treasure while working</option>
+                  <option>🐦 Listen for one outdoor sound</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:12px;">
+              <button class="btn-primary" id="addMissionBtn">Add Mission</button>
+              <span class="tiny" id="missionLimitText">0 of 3 missions packed.</span>
+            </div>
+
+            <div class="notice" id="missionNotice">Tip: only 3 missions keeps the day clear and calm.</div>
+            <div class="mission-list" id="missionList"></div>
+          </section>
+
+          <section class="card">
+            <h2>🎒 Pack Your Gear</h2>
+            <p class="sub">Pick one mission and list the tools or steps needed to get started.</p>
+
+            <div class="grid-2">
+              <div>
+                <label for="gearMissionSelect">Mission</label>
+                <select id="gearMissionSelect"></select>
+              </div>
+              <div>
+                <label for="gearInput">Add gear / first step</label>
+                <input id="gearInput" type="text" maxlength="60" placeholder="Pencil, worksheet, quiet spot..." />
+              </div>
+            </div>
+            <div class="row" style="margin-top:12px;">
+              <button class="btn-secondary" id="addGearBtn">Add to Backpack</button>
+            </div>
+            <div class="gear-list" id="gearPreview"></div>
+          </section>
+
+          <section class="card">
+            <h2>🔥 Campfire Recap</h2>
+            <p class="sub">Tell the story of your day in a few short answers.</p>
+
+            <div class="grid-3">
+              <div>
+                <label for="wentWell">What went well?</label>
+                <input id="wentWell" type="text" maxlength="80" placeholder="I started fast..." />
+              </div>
+              <div>
+                <label for="tricky">What was tricky?</label>
+                <input id="tricky" type="text" maxlength="80" placeholder="The first page felt hard..." />
+              </div>
+              <div>
+                <label for="proud">What are you proud of?</label>
+                <input id="proud" type="text" maxlength="80" placeholder="I finished my reading..." />
+              </div>
+            </div>
+            <div class="row" style="margin-top:12px;">
+              <button class="btn-sun" id="saveRecapBtn">Save Campfire Story</button>
+              <button class="btn-secondary" id="clearDayBtn">Start New Day</button>
+            </div>
+            <div class="recap-list" id="recapList"></div>
+          </section>
+        </div>
+
+        <div class="stack">
+          <section class="card">
+            <h2>🗺️ Trail Map</h2>
+            <p class="sub">Reach one checkpoint at a time. Starting counts too.</p>
+
+            <div class="map-box">
+              <div class="checkpoint"><div class="emoji">🏕️</div><div><strong>Base Camp</strong><div class="tiny">Pick your missions for the day.</div></div></div>
+              <div class="checkpoint"><div class="emoji">🧭</div><div><strong>Trail Start</strong><div class="tiny">Pack your gear so you know what comes first.</div></div></div>
+              <div class="checkpoint"><div class="emoji">🦊</div><div><strong>Forest Walk</strong><div class="tiny">Go on a short expedition and stay with one job.</div></div></div>
+              <div class="checkpoint"><div class="emoji">⛰️</div><div><strong>Lookout Point</strong><div class="tiny">Finish missions and earn stars.</div></div></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>🐻 Animal Guide</h2>
+            <p class="sub">A trail buddy appears based on today’s progress.</p>
+            <div class="animal-guide">
+              <div class="animal-emoji" id="animalEmoji">🐢</div>
+              <div>
+                <div class="animal-name" id="animalName">Turtle Guide</div>
+                <div id="animalMessage" class="tiny">Slow and steady starts the trail.</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>🏅 Trail Badges</h2>
+            <p class="sub">Earn badges for effort, not perfection.</p>
+            <div class="badge-list" id="badgeList"></div>
+          </section>
+
+          <section class="card">
+            <h2>⏱️ Expedition Mode</h2>
+            <p class="sub">Choose a short trail and work on one mission.</p>
+
+            <div class="grid-2">
+              <div>
+                <label for="timerMissionSelect">Mission</label>
+                <select id="timerMissionSelect"></select>
+              </div>
+              <div>
+                <label for="doneLooksLike">What does done look like?</label>
+                <input id="doneLooksLike" type="text" maxlength="70" placeholder="Read 5 pages, finish 1 page..." />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:12px;">
+              <button class="btn-secondary timerPreset" data-minutes="10">🐢 10 min</button>
+              <button class="btn-secondary timerPreset" data-minutes="15">🦊 15 min</button>
+              <button class="btn-secondary timerPreset" data-minutes="20">🦅 20 min</button>
+            </div>
+
+            <div class="timer-wrap">
+              <div class="timer-title" id="timerTitle">Pick a trail length and start your expedition.</div>
+              <div class="timer" id="timerDisplay">10:00</div>
+            </div>
+
+            <div class="row" style="justify-content:center;">
+              <button class="btn-primary" id="startTimerBtn">Start Expedition</button>
+              <button class="btn-secondary" id="pauseTimerBtn">Pause</button>
+              <button class="btn-berry" id="resetTimerBtn">Reset</button>
+            </div>
+
+            <div class="notice" id="timerNotice">Outdoor bonus: before you begin, notice one thing outside—a bird, a tree, the sky, or the wind.</div>
+            <div class="row" style="margin-top:10px;">
+              <button class="btn-sun" id="checkpointBtn">I Reached My Checkpoint</button>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>⭐ Adventure Wins</h2>
+            <p class="sub">Stars are earned for starting, trying, and finishing.</p>
+            <div class="wins-list" id="winsList"></div>
+          </section>
         </div>
       </div>
-    </section>
 
-    <div class="layout">
-      <div class="stack">
-        <section class="card">
-          <h2>🐾 Today’s Trail</h2>
-          <p class="sub">Choose your most important missions for today. You can have up to 3.</p>
+      <p class="footer-note">Everything saves in this browser, so the trail will still be here next time.</p>
+    </div>
 
-          <div class="grid-3">
-            <div>
-              <label for="missionInput">Mission</label>
-              <input id="missionInput" type="text" maxlength="80" placeholder="Example: Reading, math page, tidy desk" />
-            </div>
-            <div>
-              <label for="whereInput">Best place</label>
-              <input id="whereInput" type="text" maxlength="50" placeholder="Desk, porch, kitchen table..." />
-            </div>
-            <div>
-              <label for="outdoorInput">Outdoor bonus</label>
-              <select id="outdoorInput">
-                <option value="">Choose one</option>
-                <option>🌿 Find something green first</option>
-                <option>☀️ Take 3 deep breaths outside</option>
-                <option>🍃 Open a window before starting</option>
-                <option>🪨 Hold a nature treasure while working</option>
-                <option>🐦 Listen for one outdoor sound</option>
-              </select>
+    <div id="adultView" class="view">
+      <section class="hero" style="background:linear-gradient(135deg, #5d5a95, #7f74b7 45%, #8fc0d8);">
+        <div class="hero-grid">
+          <div>
+            <h1>📋 Parent / Teacher View</h1>
+            <p>This report view shows progress, patterns, and notes you can review together. Use the PDF button to save or print the report.</p>
+            <div class="hero-stats">
+              <div class="stat"><strong id="adultStarsStat">0</strong><span>Total Stars</span></div>
+              <div class="stat"><strong id="adultCompletedStat">0</strong><span>Completed Missions</span></div>
+              <div class="stat"><strong id="adultExpeditionsStat">0</strong><span>Expeditions Started</span></div>
+              <div class="stat"><strong id="adultBadgesStat">0</strong><span>Badges Earned</span></div>
             </div>
           </div>
-
-          <div class="row" style="margin-top:12px;">
-            <button class="btn-primary" id="addMissionBtn">Add Mission</button>
-            <span class="tiny" id="missionLimitText">0 of 3 missions packed.</span>
-          </div>
-
-          <div class="notice" id="missionNotice">Tip: only 3 missions keeps the day clear and calm.</div>
-          <div class="mission-list" id="missionList"></div>
-        </section>
-
-        <section class="card">
-          <h2>🎒 Pack Your Gear</h2>
-          <p class="sub">Pick one mission and list the tools or steps needed to get started.</p>
-
-          <div class="grid-2">
-            <div>
-              <label for="gearMissionSelect">Mission</label>
-              <select id="gearMissionSelect"></select>
-            </div>
-            <div>
-              <label for="gearInput">Add gear / first step</label>
-              <input id="gearInput" type="text" maxlength="60" placeholder="Pencil, worksheet, quiet spot..." />
+          <div>
+            <div class="row" style="justify-content:flex-end;">
+              <button class="btn-sun" id="printReportBtn">Generate PDF Report</button>
             </div>
           </div>
-          <div class="row" style="margin-top:12px;">
-            <button class="btn-secondary" id="addGearBtn">Add to Backpack</button>
-          </div>
-          <div class="gear-list" id="gearPreview"></div>
-        </section>
-
-        <section class="card">
-          <h2>🔥 Campfire Recap</h2>
-          <p class="sub">Tell the story of your day in a few short answers.</p>
-
-          <div class="grid-3">
-            <div>
-              <label for="wentWell">What went well?</label>
-              <input id="wentWell" type="text" maxlength="80" placeholder="I started fast..." />
-            </div>
-            <div>
-              <label for="tricky">What was tricky?</label>
-              <input id="tricky" type="text" maxlength="80" placeholder="The first page felt hard..." />
-            </div>
-            <div>
-              <label for="proud">What are you proud of?</label>
-              <input id="proud" type="text" maxlength="80" placeholder="I finished my reading..." />
-            </div>
-          </div>
-          <div class="row" style="margin-top:12px;">
-            <button class="btn-sun" id="saveRecapBtn">Save Campfire Story</button>
-            <button class="btn-secondary" id="clearDayBtn">Start New Day</button>
-          </div>
-          <div class="recap-list" id="recapList"></div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       <div class="stack">
         <section class="card">
-          <h2>🗺️ Trail Map</h2>
-          <p class="sub">Reach one checkpoint at a time. Starting counts too.</p>
-
-          <div class="map-box">
-            <div class="checkpoint"><div class="emoji">🏕️</div><div><strong>Base Camp</strong><div class="tiny">Pick your missions for the day.</div></div></div>
-            <div class="checkpoint"><div class="emoji">🧭</div><div><strong>Trail Start</strong><div class="tiny">Pack your gear so you know what comes first.</div></div></div>
-            <div class="checkpoint"><div class="emoji">🦊</div><div><strong>Forest Walk</strong><div class="tiny">Go on a short expedition and stay with one job.</div></div></div>
-            <div class="checkpoint"><div class="emoji">⛰️</div><div><strong>Lookout Point</strong><div class="tiny">Finish missions and earn stars.</div></div></div>
+          <h2>Key Metrics</h2>
+          <div class="grid-4">
+            <div class="metric"><strong id="metricMissionCount">0</strong><span>Today's Missions</span></div>
+            <div class="metric"><strong id="metricGearCount">0</strong><span>Gear Items Packed</span></div>
+            <div class="metric"><strong id="metricCheckpointCount">0</strong><span>Checkpoints Reached</span></div>
+            <div class="metric"><strong id="metricRecapCount">0</strong><span>Campfire Entries</span></div>
           </div>
         </section>
 
         <section class="card">
-          <h2>⏱️ Expedition Mode</h2>
-          <p class="sub">Choose a short trail and work on one mission.</p>
+          <h2>Current Missions</h2>
+          <p class="sub">A simple snapshot of what is planned and what is finished.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mission</th>
+                  <th>Status</th>
+                  <th>Best Place</th>
+                  <th>Outdoor Bonus</th>
+                  <th>Gear Progress</th>
+                </tr>
+              </thead>
+              <tbody id="adultMissionTable"></tbody>
+            </table>
+          </div>
+        </section>
 
+        <section class="card">
+          <h2>Recent Notes</h2>
+          <p class="sub">Campfire recaps and adult observations for sharing at school or home.</p>
           <div class="grid-2">
             <div>
-              <label for="timerMissionSelect">Mission</label>
-              <select id="timerMissionSelect"></select>
+              <label for="adultNoteInput">Add parent / teacher note</label>
+              <textarea id="adultNoteInput" placeholder="Example: Started reading more easily after picking a quiet outdoor spot."></textarea>
             </div>
             <div>
-              <label for="doneLooksLike">What does done look like?</label>
-              <input id="doneLooksLike" type="text" maxlength="70" placeholder="Read 5 pages, finish 1 page..." />
+              <label for="childStrengthInput">Strength / support idea</label>
+              <textarea id="childStrengthInput" placeholder="Example: Responds well to short timers and nature-themed rewards."></textarea>
             </div>
           </div>
-
           <div class="row" style="margin-top:12px;">
-            <button class="btn-secondary timerPreset" data-minutes="10">🐢 10 min</button>
-            <button class="btn-secondary timerPreset" data-minutes="15">🦊 15 min</button>
-            <button class="btn-secondary timerPreset" data-minutes="20">🦅 20 min</button>
+            <button class="btn-lav" id="saveAdultNoteBtn">Save Note</button>
           </div>
-
-          <div class="timer-wrap">
-            <div class="timer-title" id="timerTitle">Pick a trail length and start your expedition.</div>
-            <div class="timer" id="timerDisplay">10:00</div>
-          </div>
-
-          <div class="row" style="justify-content:center;">
-            <button class="btn-primary" id="startTimerBtn">Start Expedition</button>
-            <button class="btn-secondary" id="pauseTimerBtn">Pause</button>
-            <button class="btn-berry" id="resetTimerBtn">Reset</button>
-          </div>
-
-          <div class="notice" id="timerNotice">Outdoor bonus: before you begin, notice one thing outside—a bird, a tree, the sky, or the wind.</div>
-          <div class="row" style="margin-top:10px;">
-            <button class="btn-sun" id="checkpointBtn">I Reached My Checkpoint</button>
-          </div>
+          <div class="note-list" id="adultNotesList"></div>
         </section>
 
         <section class="card">
-          <h2>⭐ Adventure Wins</h2>
-          <p class="sub">Stars are earned for starting, trying, and finishing.</p>
-          <div class="wins-list" id="winsList"></div>
+          <h2>Recent Adventure Activity</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Adventure Win</th>
+                </tr>
+              </thead>
+              <tbody id="adultWinsTable"></tbody>
+            </table>
+          </div>
         </section>
       </div>
     </div>
-
-    <p class="footer-note">Everything saves in this browser, so the trail will still be here next time.</p>
   </div>
 
   <script>
-    const STORAGE_KEY = 'trail-guide-v1';
+    const STORAGE_KEY = 'trail-guide-v2';
+
+    const BADGES = [
+      { id:'starter', icon:'🥾', name:'Trail Starter', desc:'Pack 1 mission', earned: s => s.missions.length >= 1 },
+      { id:'planner', icon:'🎒', name:'Backpack Builder', desc:'Add 3 gear items total', earned: s => totalGear(s) >= 3 },
+      { id:'focus', icon:'🧭', name:'Compass Keeper', desc:'Start 2 expeditions', earned: s => countByType(s, 'expedition-start') >= 2 },
+      { id:'checkpoint', icon:'🏞️', name:'Checkpoint Champ', desc:'Reach 2 checkpoints', earned: s => countByType(s, 'checkpoint') >= 2 },
+      { id:'finisher', icon:'🏁', name:'Mission Finisher', desc:'Complete 3 missions total', earned: s => totalCompletedMissions(s) >= 3 },
+      { id:'reflector', icon:'🔥', name:'Campfire Thinker', desc:'Save 2 campfire recaps', earned: s => s.recap.length >= 2 }
+    ];
+
+    const ANIMAL_GUIDES = [
+      { min:0, emoji:'🐢', name:'Turtle Guide', msg:'Slow and steady starts the trail.' },
+      { min:2, emoji:'🐿️', name:'Squirrel Guide', msg:'Nice job gathering what you need.' },
+      { min:4, emoji:'🦊', name:'Fox Guide', msg:'You are moving with focus and curiosity.' },
+      { min:7, emoji:'🦅', name:'Eagle Guide', msg:'You are spotting the trail from high above.' },
+      { min:10, emoji:'🐻', name:'Bear Guide', msg:'Big calm energy. You are doing hard things.' }
+    ];
 
     const defaultState = {
       missions: [],
       stars: 0,
       wins: [],
       recap: [],
+      adultNotes: [],
       timerMinutes: 10,
       timerSecondsLeft: 600,
       timerRunning: false,
@@ -566,10 +811,31 @@
     const missionsDoneStat = document.getElementById('missionsDoneStat');
     const starsStat = document.getElementById('starsStat');
     const streakStat = document.getElementById('streakStat');
+    const badgesStat = document.getElementById('badgesStat');
 
     const wentWell = document.getElementById('wentWell');
     const tricky = document.getElementById('tricky');
     const proud = document.getElementById('proud');
+
+    const animalEmoji = document.getElementById('animalEmoji');
+    const animalName = document.getElementById('animalName');
+    const animalMessage = document.getElementById('animalMessage');
+    const badgeList = document.getElementById('badgeList');
+
+    const adultStarsStat = document.getElementById('adultStarsStat');
+    const adultCompletedStat = document.getElementById('adultCompletedStat');
+    const adultExpeditionsStat = document.getElementById('adultExpeditionsStat');
+    const adultBadgesStat = document.getElementById('adultBadgesStat');
+
+    const metricMissionCount = document.getElementById('metricMissionCount');
+    const metricGearCount = document.getElementById('metricGearCount');
+    const metricCheckpointCount = document.getElementById('metricCheckpointCount');
+    const metricRecapCount = document.getElementById('metricRecapCount');
+    const adultMissionTable = document.getElementById('adultMissionTable');
+    const adultWinsTable = document.getElementById('adultWinsTable');
+    const adultNotesList = document.getElementById('adultNotesList');
+    const adultNoteInput = document.getElementById('adultNoteInput');
+    const childStrengthInput = document.getElementById('childStrengthInput');
 
     function loadState(){
       try {
@@ -596,16 +862,39 @@
         state = {
           ...structuredClone(defaultState),
           stars: state.stars,
-          wins: state.wins.slice(-12),
+          wins: state.wins.slice(-20),
+          recap: state.recap.slice(0, 10),
+          adultNotes: state.adultNotes.slice(0, 20),
           todaySeed: today
         };
         saveState();
       }
     }
 
-    function addWin(text){
-      state.wins.unshift({ id: uid(), text, time: new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) });
-      state.wins = state.wins.slice(0, 12);
+    function totalGear(s){
+      return s.missions.reduce((sum, m) => sum + m.gear.length, 0);
+    }
+
+    function totalCompletedMissions(s){
+      return s.wins.filter(w => w.type === 'mission-complete').length;
+    }
+
+    function countByType(s, type){
+      return s.wins.filter(w => w.type === type).length;
+    }
+
+    function currentBadges(){
+      return BADGES.filter(b => b.earned(state));
+    }
+
+    function addWin(text, type='general'){
+      state.wins.unshift({
+        id: uid(),
+        text,
+        type,
+        time: new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})
+      });
+      state.wins = state.wins.slice(0, 24);
     }
 
     function addStars(count){
@@ -614,6 +903,15 @@
 
     function getMissionById(id){
       return state.missions.find(m => m.id === id);
+    }
+
+    function getAnimalGuide(){
+      const progress = state.stars + currentBadges().length;
+      let chosen = ANIMAL_GUIDES[0];
+      for(const guide of ANIMAL_GUIDES){
+        if(progress >= guide.min) chosen = guide;
+      }
+      return chosen;
     }
 
     function renderTrail(){
@@ -728,11 +1026,33 @@
         : `<div class="empty">No campfire stories saved yet.</div>`;
     }
 
+    function renderAnimalGuide(){
+      const guide = getAnimalGuide();
+      animalEmoji.textContent = guide.emoji;
+      animalName.textContent = guide.name;
+      animalMessage.textContent = guide.msg;
+    }
+
+    function renderBadges(){
+      const earned = currentBadges().map(b => b.id);
+      badgeList.innerHTML = BADGES.map(b => `
+        <div class="badge-card ${earned.includes(b.id) ? '' : 'locked'}">
+          <div class="badge-icon">${b.icon}</div>
+          <div>
+            <strong>${escapeHtml(b.name)}</strong>
+            <div class="tiny">${escapeHtml(b.desc)}</div>
+            <div class="tiny" style="margin-top:4px;">${earned.includes(b.id) ? 'Earned!' : 'Keep going'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
     function renderStats(){
       const doneCount = state.missions.filter(m => m.done).length;
       missionsDoneStat.textContent = doneCount;
       starsStat.textContent = state.stars;
       streakStat.textContent = `${state.missions.length}/3`;
+      badgesStat.textContent = currentBadges().length;
     }
 
     function renderTimer(){
@@ -749,6 +1069,51 @@
       }
     }
 
+    function renderAdultView(){
+      adultStarsStat.textContent = state.stars;
+      adultCompletedStat.textContent = state.missions.filter(m => m.done).length;
+      adultExpeditionsStat.textContent = countByType(state, 'expedition-start');
+      adultBadgesStat.textContent = currentBadges().length;
+
+      metricMissionCount.textContent = state.missions.length;
+      metricGearCount.textContent = totalGear(state);
+      metricCheckpointCount.textContent = countByType(state, 'checkpoint');
+      metricRecapCount.textContent = state.recap.length;
+
+      adultMissionTable.innerHTML = state.missions.length ? state.missions.map(m => {
+        const gearDone = m.gear.filter(g => g.done).length;
+        return `
+          <tr>
+            <td>${escapeHtml(m.title)}</td>
+            <td>${m.done ? 'Done' : 'In progress'}</td>
+            <td>${escapeHtml(m.where || '—')}</td>
+            <td>${escapeHtml(m.outdoor || '—')}</td>
+            <td>${gearDone}/${m.gear.length}</td>
+          </tr>
+        `;
+      }).join('') : `<tr><td colspan="5">No missions added yet.</td></tr>`;
+
+      adultWinsTable.innerHTML = state.wins.length ? state.wins.map(w => `
+        <tr>
+          <td>${escapeHtml(w.time)}</td>
+          <td>${escapeHtml(w.text)}</td>
+        </tr>
+      `).join('') : `<tr><td colspan="2">No activity yet.</td></tr>`;
+
+      const combinedNotes = [
+        ...state.adultNotes.map(n => ({ type:'Adult Note', body:`${n.note}${n.strength ? ' | Strength / support: ' + n.strength : ''}`, date:n.date })),
+        ...state.recap.map(r => ({ type:'Campfire Recap', body:`Went well: ${r.wentWell || '—'} | Tricky: ${r.tricky || '—'} | Proud of: ${r.proud || '—'}`, date:r.date }))
+      ].slice(0, 16);
+
+      adultNotesList.innerHTML = combinedNotes.length ? combinedNotes.map(n => `
+        <div class="choice">
+          <strong>${escapeHtml(n.type)}</strong>
+          <div class="tiny">${escapeHtml(n.date)}</div>
+          <div style="margin-top:6px;">${escapeHtml(n.body)}</div>
+        </div>
+      `).join('') : `<div class="empty">No notes yet.</div>`;
+    }
+
     function renderAll(){
       ensureToday();
       renderTrail();
@@ -757,8 +1122,11 @@
       renderGearPreview();
       renderWins();
       renderRecap();
+      renderAnimalGuide();
+      renderBadges();
       renderStats();
       renderTimer();
+      renderAdultView();
       saveState();
     }
 
@@ -781,7 +1149,7 @@
       }
       state.timerRunning = true;
       timerNotice.textContent = 'Stay with one mission. Tiny steps count.';
-      addWin('Started an expedition');
+      addWin('Started an expedition', 'expedition-start');
       addStars(1);
       renderAll();
 
@@ -791,7 +1159,7 @@
           clearInterval(timerInterval);
           state.timerRunning = false;
           state.timerSecondsLeft = 0;
-          addWin('Finished an expedition timer');
+          addWin('Finished an expedition timer', 'expedition-complete');
           addStars(1);
           timerNotice.textContent = 'Trail timer complete! Did you reach your checkpoint?';
           renderAll();
@@ -835,6 +1203,19 @@
         .replaceAll("'", '&#39;');
     }
 
+    function showView(which){
+      document.getElementById('kidView').classList.toggle('active', which === 'kid');
+      document.getElementById('adultView').classList.toggle('active', which === 'adult');
+    }
+
+    document.getElementById('showKidViewBtn').addEventListener('click', () => showView('kid'));
+    document.getElementById('showAdultViewBtn').addEventListener('click', () => showView('adult'));
+
+    document.getElementById('printReportBtn').addEventListener('click', () => {
+      showView('adult');
+      window.print();
+    });
+
     document.getElementById('addMissionBtn').addEventListener('click', () => {
       const title = missionInput.value.trim();
       const where = whereInput.value.trim();
@@ -859,7 +1240,7 @@
       whereInput.value = '';
       outdoorInput.value = '';
       missionNotice.textContent = 'Mission packed! Nice choice.';
-      addWin(`Packed mission: ${title}`);
+      addWin(`Packed mission: ${title}`, 'mission-add');
       renderAll();
     });
 
@@ -870,7 +1251,7 @@
       if(!mission || !text) return;
       mission.gear.push({ text, done:false });
       gearInput.value = '';
-      addWin(`Packed gear for ${mission.title}`);
+      addWin(`Packed gear for ${mission.title}`, 'gear-add');
       renderAll();
     });
 
@@ -896,7 +1277,7 @@
     document.getElementById('checkpointBtn').addEventListener('click', () => {
       const mission = getMissionById(timerMissionSelect.value || state.timerMissionId);
       if(mission){
-        addWin(`Reached checkpoint for ${mission.title}`);
+        addWin(`Reached checkpoint for ${mission.title}`, 'checkpoint');
         addStars(1);
         timerNotice.textContent = 'Checkpoint reached! Great job staying on the trail.';
       } else {
@@ -913,26 +1294,44 @@
         tricky: tricky.value.trim(),
         proud: proud.value.trim()
       });
-      state.recap = state.recap.slice(0, 7);
+      state.recap = state.recap.slice(0, 10);
       if(wentWell.value.trim() || proud.value.trim()){
         addStars(1);
       }
       wentWell.value = '';
       tricky.value = '';
       proud.value = '';
-      addWin('Saved a campfire story');
+      addWin('Saved a campfire story', 'recap-save');
+      renderAll();
+    });
+
+    document.getElementById('saveAdultNoteBtn').addEventListener('click', () => {
+      const note = adultNoteInput.value.trim();
+      const strength = childStrengthInput.value.trim();
+      if(!note && !strength) return;
+      state.adultNotes.unshift({
+        id: uid(),
+        date: new Date().toLocaleDateString(),
+        note,
+        strength
+      });
+      state.adultNotes = state.adultNotes.slice(0, 20);
+      adultNoteInput.value = '';
+      childStrengthInput.value = '';
       renderAll();
     });
 
     document.getElementById('clearDayBtn').addEventListener('click', () => {
       const keepStars = state.stars;
-      const keepWins = state.wins.slice(0, 12);
-      const keepRecap = state.recap.slice(0, 7);
+      const keepWins = state.wins.slice(0, 24);
+      const keepRecap = state.recap.slice(0, 10);
+      const keepNotes = state.adultNotes.slice(0, 20);
       state = {
         ...structuredClone(defaultState),
         stars: keepStars,
         wins: keepWins,
         recap: keepRecap,
+        adultNotes: keepNotes,
         todaySeed: new Date().toDateString()
       };
       clearInterval(timerInterval);
@@ -945,7 +1344,7 @@
       mission.done = !mission.done;
       if(mission.done){
         addStars(2);
-        addWin(`Finished mission: ${mission.title}`);
+        addWin(`Finished mission: ${mission.title}`, 'mission-complete');
       }
       renderAll();
     }

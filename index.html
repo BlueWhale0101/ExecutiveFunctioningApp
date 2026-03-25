@@ -3,303 +3,357 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mission Control MVP</title>
+  <title>Trail Guide Adventure Planner</title>
   <style>
-    :root {
-      --bg: #f4f7fb;
-      --card: #ffffff;
-      --ink: #1f2937;
-      --muted: #6b7280;
-      --line: #dbe4f0;
-      --accent: #4f46e5;
-      --accent-2: #10b981;
-      --warn: #f59e0b;
-      --danger: #ef4444;
-      --shadow: 0 10px 28px rgba(31, 41, 55, 0.08);
-      --radius: 18px;
+    :root{
+      --bg1:#eef7ef;
+      --bg2:#f8fbf4;
+      --card:#ffffff;
+      --ink:#223126;
+      --muted:#617164;
+      --line:#d7e3d6;
+      --forest:#3e6b48;
+      --moss:#6c9a5b;
+      --sky:#7bb3d9;
+      --sun:#f3c95a;
+      --berry:#c76b5a;
+      --shadow:0 12px 30px rgba(42, 60, 46, 0.10);
+      --radius:20px;
     }
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 50%, #f8fbff 100%);
-      color: var(--ink);
+    * { box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: "Avenir Next", "Trebuchet MS", system-ui, -apple-system, sans-serif;
+      color:var(--ink);
+      background: linear-gradient(180deg, #e9f6ef 0%, var(--bg1) 36%, var(--bg2) 100%);
+    }
+    .app{
+      max-width:1180px;
+      margin:0 auto;
+      padding:18px;
+    }
+    .hero{
+      background: linear-gradient(135deg, #4d7d52, #6f9a5f 48%, #8fc0d8);
+      color:white;
+      border-radius:28px;
+      padding:24px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+      overflow:hidden;
+      position:relative;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      inset:auto -90px -100px auto;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:rgba(255,255,255,0.12);
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.5fr 1fr;
+      gap:18px;
+      align-items:end;
+      position:relative;
+      z-index:1;
+    }
+    .hero h1{
+      margin:0 0 6px;
+      font-size:clamp(2rem, 3.4vw, 3rem);
+      line-height:1.05;
+    }
+    .hero p{
+      margin:8px 0;
+      max-width:760px;
+      opacity:.96;
+    }
+    .hero-stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+    .stat{
+      background:rgba(255,255,255,0.17);
+      border:1px solid rgba(255,255,255,0.18);
+      border-radius:18px;
+      padding:12px;
+      text-align:center;
+      backdrop-filter: blur(3px);
+    }
+    .stat strong{
+      display:block;
+      font-size:1.45rem;
     }
 
-    .app {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
+    .layout{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      align-items:start;
+    }
+    .stack{
+      display:grid;
+      gap:18px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .card h2{
+      margin:0 0 8px;
+      font-size:1.25rem;
+    }
+    .sub{
+      color:var(--muted);
+      margin:0 0 14px;
+    }
+    .grid-2, .grid-3{
+      display:grid;
+      gap:12px;
+    }
+    .grid-2{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .grid-3{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+
+    label{
+      display:block;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+    input[type="text"], textarea, select{
+      width:100%;
+      border:1px solid #cadac8;
+      background:#fff;
+      border-radius:14px;
+      padding:12px 13px;
+      font:inherit;
+      color:var(--ink);
+    }
+    textarea{
+      min-height:92px;
+      resize:vertical;
     }
 
-    .hero {
-      background: linear-gradient(135deg, #4f46e5, #2563eb 60%, #0ea5e9);
-      color: white;
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-      margin-bottom: 18px;
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    button{
+      border:0;
+      border-radius:14px;
+      padding:11px 14px;
+      font:inherit;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .08s ease, opacity .2s ease, box-shadow .2s ease;
+      box-shadow:0 4px 14px rgba(0,0,0,.06);
+    }
+    button:hover{ opacity:.96; }
+    button:active{ transform:translateY(1px); }
+    .btn-primary{ background:var(--forest); color:white; }
+    .btn-secondary{ background:#ecf5eb; color:var(--forest); }
+    .btn-sky{ background:var(--sky); color:white; }
+    .btn-sun{ background:var(--sun); color:#4d4216; }
+    .btn-berry{ background:var(--berry); color:white; }
+    .tiny{
+      font-size:.9rem;
+      color:var(--muted);
     }
 
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: clamp(1.8rem, 3vw, 2.7rem);
-      line-height: 1.1;
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#eef7ec;
+      color:var(--forest);
+      border:1px solid #dcead9;
+      border-radius:999px;
+      padding:7px 11px;
+      font-weight:800;
+      font-size:.92rem;
     }
 
-    .hero p {
-      margin: 6px 0;
-      max-width: 800px;
-      opacity: 0.95;
+    .trail-strip{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:8px;
+      margin-top:12px;
+    }
+    .trail-step{
+      border-radius:999px;
+      padding:10px 8px;
+      text-align:center;
+      background:#edf2eb;
+      border:1px solid #dce5d8;
+      font-size:1.1rem;
+    }
+    .trail-step.done{
+      background:#dff0da;
+      border-color:#bad6b5;
+    }
+    .trail-step.current{
+      background:#d7ebf8;
+      border-color:#b5d4ea;
+      transform:translateY(-2px);
     }
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 14px;
-      align-items: end;
+    .mission-list, .gear-list, .wins-list, .recap-list{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+    .mission{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      background:linear-gradient(180deg, #fbfdf9 0%, #f7fbf5 100%);
+    }
+    .mission-head{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .mission-title{
+      margin:0;
+      font-size:1.02rem;
+    }
+    .pill{
+      display:inline-block;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:.82rem;
+      font-weight:800;
+      background:#eef7ec;
+      color:var(--forest);
+      border:1px solid #dcead9;
+    }
+    .mission.done{
+      opacity:.8;
+      border-style:dashed;
+    }
+    .mission.done .mission-title{
+      text-decoration:line-through;
+    }
+    .mission-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:10px 0;
+    }
+    .gear-list-mini{
+      display:grid;
+      gap:6px;
+      margin:10px 0 0;
+    }
+    .gear-chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:#fff;
+      border:1px solid #e1eadf;
+      border-radius:12px;
+      padding:8px 10px;
+    }
+    .mission-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
     }
 
-    .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 12px;
+    .map-box{
+      background:linear-gradient(180deg, #f7fbff, #f4fbf2);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
     }
 
-    .stat {
-      background: rgba(255,255,255,0.16);
-      border: 1px solid rgba(255,255,255,0.16);
-      border-radius: 16px;
-      padding: 12px;
-      text-align: center;
+    .checkpoint{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:10px;
+      align-items:center;
+      padding:12px;
+      border-radius:16px;
+      background:#fbfcfa;
+      border:1px solid #e2eadd;
+      margin-top:10px;
+    }
+    .checkpoint .emoji{
+      font-size:1.5rem;
     }
 
-    .stat strong {
-      display: block;
-      font-size: 1.4rem;
-      margin-bottom: 2px;
+    .timer-wrap{
+      text-align:center;
+      padding:10px 0 4px;
+    }
+    .timer-title{
+      font-size:1rem;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .timer{
+      font-size:clamp(2.6rem, 7vw, 4.4rem);
+      font-weight:900;
+      letter-spacing:.05em;
+      line-height:1;
+      margin:8px 0 16px;
+      color:var(--forest);
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-      align-items: start;
+    .choice{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background:#fbfdf9;
     }
 
-    .stack {
-      display: grid;
-      gap: 18px;
+    .notice{
+      border-radius:16px;
+      padding:12px 14px;
+      background:#fff8de;
+      border:1px solid #efdf9f;
+      color:#5e4d13;
+      margin-top:12px;
+    }
+    .success{
+      background:#e9f7e8;
+      border-color:#c7e3c2;
+      color:#275232;
     }
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
+    .empty{
+      padding:14px;
+      border:1px dashed #cfdccc;
+      border-radius:16px;
+      color:var(--muted);
+      background:#fafcf9;
+      text-align:center;
     }
 
-    .card h2 {
-      margin: 0 0 8px;
-      font-size: 1.2rem;
+    .footer-note{
+      text-align:center;
+      color:var(--muted);
+      font-size:.92rem;
+      padding:8px 0 14px;
     }
 
-    .sub {
-      color: var(--muted);
-      margin-top: 0;
-      font-size: 0.95rem;
-    }
-
-    .grid-2, .grid-3 {
-      display: grid;
-      gap: 12px;
-    }
-
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      font-size: 0.95rem;
-    }
-
-    input[type="text"], textarea, select {
-      width: 100%;
-      border: 1px solid #cad6e5;
-      background: #fff;
-      border-radius: 12px;
-      padding: 12px 13px;
-      font: inherit;
-      color: var(--ink);
-    }
-
-    textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    .row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    button {
-      border: 0;
-      border-radius: 12px;
-      padding: 11px 14px;
-      font: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.08s ease, opacity 0.2s ease;
-    }
-
-    button:hover { opacity: 0.95; }
-    button:active { transform: translateY(1px); }
-
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-secondary { background: #e8eefb; color: #234; }
-    .btn-success { background: var(--accent-2); color: white; }
-    .btn-warn { background: var(--warn); color: white; }
-    .btn-danger { background: var(--danger); color: white; }
-
-    .mission-list, .steps-list, .wins-list {
-      display: grid;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .mission, .step-item, .win-item {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px;
-      background: #fbfdff;
-    }
-
-    .mission-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: start;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      background: #edf2ff;
-      color: #334155;
-    }
-
-    .priority-high { background: #fee2e2; color: #991b1b; }
-    .priority-medium { background: #fef3c7; color: #92400e; }
-    .priority-low { background: #dcfce7; color: #166534; }
-
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .checkbox-row input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
-      accent-color: var(--accent-2);
-    }
-
-    .mission.done {
-      background: #f0fdf4;
-      border-color: #bbf7d0;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .progress-shell {
-      width: 100%;
-      height: 16px;
-      background: rgba(255,255,255,0.24);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 12px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #34d399, #bbf7d0);
-      border-radius: 999px;
-      transition: width 0.25s ease;
-    }
-
-    .timer {
-      text-align: center;
-      padding: 10px 0;
-    }
-
-    .timer-display {
-      font-size: clamp(2.6rem, 7vw, 4rem);
-      font-weight: 800;
-      letter-spacing: 2px;
-      margin: 8px 0 12px;
-    }
-
-    .big-note {
-      background: #eff6ff;
-      border: 1px dashed #93c5fd;
-      border-radius: 14px;
-      padding: 12px;
-      color: #1d4ed8;
-      font-weight: 600;
-      margin-top: 12px;
-    }
-
-    .reflection-box {
-      background: #fafcff;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px;
-    }
-
-    .tiny {
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-
-    .footer-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    @media (max-width: 920px) {
-      .layout, .hero-grid, .grid-2, .grid-3 {
-        grid-template-columns: 1fr;
+    @media (max-width: 920px){
+      .layout, .hero-grid, .grid-2, .grid-3{
+        grid-template-columns:1fr;
       }
-      .hero-stats {
-        grid-template-columns: repeat(3, 1fr);
+      .trail-strip{
+        grid-template-columns:repeat(7, minmax(34px,1fr));
       }
-    }
-
-    @media (max-width: 640px) {
-      .app { padding: 12px; }
-      .hero, .card { padding: 15px; }
-      .hero-stats { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -308,409 +362,617 @@
     <section class="hero">
       <div class="hero-grid">
         <div>
-          <h1>Mission Control</h1>
-          <p>A simple coaching app for planning the day, breaking down big tasks, doing one focus session at a time, and reflecting on what worked.</p>
-          <div class="progress-shell" aria-label="daily progress">
-            <div class="progress-bar" id="progressBar"></div>
+          <h1>🌲 Trail Guide</h1>
+          <p>An outdoor adventure planner for kids. Pick up to three missions, pack your gear, go on a short expedition, and end the day with a campfire recap.</p>
+          <div class="hero-stats">
+            <div class="stat"><strong id="missionsDoneStat">0</strong><span>Missions Done</span></div>
+            <div class="stat"><strong id="starsStat">0</strong><span>Stars Earned</span></div>
+            <div class="stat"><strong id="streakStat">0</strong><span>Today’s Trail</span></div>
           </div>
-          <p id="progressText">0 of 0 missions done today</p>
         </div>
-        <div class="hero-stats">
-          <div class="stat"><strong id="statMissions">0</strong><span>missions</span></div>
-          <div class="stat"><strong id="statFocus">0</strong><span>focus sessions</span></div>
-          <div class="stat"><strong id="statWins">0</strong><span>wins logged</span></div>
+        <div>
+          <div class="badge">🧭 Adventure Mode On</div>
+          <div class="trail-strip" id="trailStrip"></div>
+          <p class="tiny">Each finished mission moves you farther down the trail.</p>
         </div>
       </div>
     </section>
 
     <div class="layout">
-      <main class="stack">
+      <div class="stack">
         <section class="card">
-          <h2>1. Plan today</h2>
-          <p class="sub">Pick a few important missions. Keep it small and clear.</p>
+          <h2>🐾 Today’s Trail</h2>
+          <p class="sub">Choose your most important missions for today. You can have up to 3.</p>
+
           <div class="grid-3">
             <div>
-              <label for="missionTitle">Mission</label>
-              <input id="missionTitle" type="text" placeholder="Example: Finish math worksheet" />
+              <label for="missionInput">Mission</label>
+              <input id="missionInput" type="text" maxlength="80" placeholder="Example: Reading, math page, tidy desk" />
             </div>
             <div>
-              <label for="missionWhen">When will you do it?</label>
-              <input id="missionWhen" type="text" placeholder="Example: 4:00 after snack" />
+              <label for="whereInput">Best place</label>
+              <input id="whereInput" type="text" maxlength="50" placeholder="Desk, porch, kitchen table..." />
             </div>
             <div>
-              <label for="missionPriority">Priority</label>
-              <select id="missionPriority">
-                <option value="high">High</option>
-                <option value="medium" selected>Medium</option>
-                <option value="low">Low</option>
+              <label for="outdoorInput">Outdoor bonus</label>
+              <select id="outdoorInput">
+                <option value="">Choose one</option>
+                <option>🌿 Find something green first</option>
+                <option>☀️ Take 3 deep breaths outside</option>
+                <option>🍃 Open a window before starting</option>
+                <option>🪨 Hold a nature treasure while working</option>
+                <option>🐦 Listen for one outdoor sound</option>
               </select>
             </div>
           </div>
-          <div style="margin-top:12px;">
-            <label for="missionObstacle">What might get in the way?</label>
-            <input id="missionObstacle" type="text" placeholder="Example: I may want to play first" />
+
+          <div class="row" style="margin-top:12px;">
+            <button class="btn-primary" id="addMissionBtn">Add Mission</button>
+            <span class="tiny" id="missionLimitText">0 of 3 missions packed.</span>
           </div>
-          <div class="footer-actions">
-            <div class="tiny">Tip: most middle schoolers do better with 1 to 3 real missions, not 10.</div>
-            <button class="btn-primary" id="addMissionBtn">Add mission</button>
-          </div>
+
+          <div class="notice" id="missionNotice">Tip: only 3 missions keeps the day clear and calm.</div>
           <div class="mission-list" id="missionList"></div>
         </section>
 
         <section class="card">
-          <h2>2. Break it down</h2>
-          <p class="sub">When a task feels huge, shrink it into tiny steps.</p>
-          <div>
-            <label for="bigTask">Big task</label>
-            <input id="bigTask" type="text" placeholder="Example: Study for science quiz" />
-          </div>
-          <div style="margin-top: 12px;">
-            <label for="stepPrompt">First tiny step or paste your own list below</label>
-            <textarea id="stepPrompt" placeholder="Example:\nFind notebook\nRead pages 12-15\nMake 5 flashcards\nQuiz myself once"></textarea>
+          <h2>🎒 Pack Your Gear</h2>
+          <p class="sub">Pick one mission and list the tools or steps needed to get started.</p>
+
+          <div class="grid-2">
+            <div>
+              <label for="gearMissionSelect">Mission</label>
+              <select id="gearMissionSelect"></select>
+            </div>
+            <div>
+              <label for="gearInput">Add gear / first step</label>
+              <input id="gearInput" type="text" maxlength="60" placeholder="Pencil, worksheet, quiet spot..." />
+            </div>
           </div>
           <div class="row" style="margin-top:12px;">
-            <button class="btn-secondary" id="generateStepsBtn">Suggest tiny steps</button>
-            <button class="btn-primary" id="saveStepsBtn">Save step list</button>
+            <button class="btn-secondary" id="addGearBtn">Add to Backpack</button>
           </div>
-          <div class="steps-list" id="stepsList"></div>
+          <div class="gear-list" id="gearPreview"></div>
         </section>
-      </main>
 
-      <aside class="stack">
         <section class="card">
-          <h2>3. Focus session</h2>
-          <p class="sub">Choose one thing. Work on it for a short, clear chunk of time.</p>
-          <div>
-            <label for="focusTask">What are you working on?</label>
-            <input id="focusTask" type="text" placeholder="Example: First 10 math problems" />
-          </div>
-          <div style="margin-top:12px;">
-            <label for="focusDone">What does done look like?</label>
-            <input id="focusDone" type="text" placeholder="Example: Questions 1 to 10 are finished" />
-          </div>
-          <div class="grid-2" style="margin-top:12px;">
+          <h2>🔥 Campfire Recap</h2>
+          <p class="sub">Tell the story of your day in a few short answers.</p>
+
+          <div class="grid-3">
             <div>
-              <label for="focusMinutes">Minutes</label>
-              <select id="focusMinutes">
-                <option>10</option>
-                <option selected>15</option>
-                <option>20</option>
-                <option>25</option>
-              </select>
+              <label for="wentWell">What went well?</label>
+              <input id="wentWell" type="text" maxlength="80" placeholder="I started fast..." />
             </div>
             <div>
-              <label for="distractionNote">Distraction catcher</label>
-              <input id="distractionNote" type="text" placeholder="Write it, don't chase it" />
+              <label for="tricky">What was tricky?</label>
+              <input id="tricky" type="text" maxlength="80" placeholder="The first page felt hard..." />
+            </div>
+            <div>
+              <label for="proud">What are you proud of?</label>
+              <input id="proud" type="text" maxlength="80" placeholder="I finished my reading..." />
             </div>
           </div>
-          <div class="timer">
-            <div class="timer-display" id="timerDisplay">15:00</div>
-            <div class="row" style="justify-content:center;">
-              <button class="btn-primary" id="startTimerBtn">Start</button>
-              <button class="btn-secondary" id="pauseTimerBtn">Pause</button>
-              <button class="btn-warn" id="resetTimerBtn">Reset</button>
-            </div>
+          <div class="row" style="margin-top:12px;">
+            <button class="btn-sun" id="saveRecapBtn">Save Campfire Story</button>
+            <button class="btn-secondary" id="clearDayBtn">Start New Day</button>
           </div>
-          <div class="row">
-            <button class="btn-secondary" id="captureDistractionBtn">Capture distraction</button>
-            <button class="btn-success" id="finishSessionBtn">Log session</button>
-          </div>
-          <div class="big-note" id="currentFocusNote">Pick a task and press start.</div>
+          <div class="recap-list" id="recapList"></div>
         </section>
+      </div>
 
+      <div class="stack">
         <section class="card">
-          <h2>4. Reflect</h2>
-          <p class="sub">A tiny reflection helps build self-awareness and better habits.</p>
-          <div class="reflection-box">
-            <label for="wentWell">What went well?</label>
-            <textarea id="wentWell" placeholder="Example: I started faster than yesterday."></textarea>
-          </div>
-          <div class="reflection-box" style="margin-top: 12px;">
-            <label for="wasHard">What was hard?</label>
-            <textarea id="wasHard" placeholder="Example: I got distracted by my phone."></textarea>
-          </div>
-          <div class="reflection-box" style="margin-top: 12px;">
-            <label for="tomorrowTip">One thing to try next time</label>
-            <textarea id="tomorrowTip" placeholder="Example: Put phone in another room before I start."></textarea>
-          </div>
-          <div class="footer-actions">
-            <button class="btn-primary" id="saveReflectionBtn">Save reflection</button>
+          <h2>🗺️ Trail Map</h2>
+          <p class="sub">Reach one checkpoint at a time. Starting counts too.</p>
+
+          <div class="map-box">
+            <div class="checkpoint"><div class="emoji">🏕️</div><div><strong>Base Camp</strong><div class="tiny">Pick your missions for the day.</div></div></div>
+            <div class="checkpoint"><div class="emoji">🧭</div><div><strong>Trail Start</strong><div class="tiny">Pack your gear so you know what comes first.</div></div></div>
+            <div class="checkpoint"><div class="emoji">🦊</div><div><strong>Forest Walk</strong><div class="tiny">Go on a short expedition and stay with one job.</div></div></div>
+            <div class="checkpoint"><div class="emoji">⛰️</div><div><strong>Lookout Point</strong><div class="tiny">Finish missions and earn stars.</div></div></div>
           </div>
         </section>
 
         <section class="card">
-          <h2>Today's wins</h2>
-          <p class="sub">Celebrate starts, focus, and follow-through.</p>
+          <h2>⏱️ Expedition Mode</h2>
+          <p class="sub">Choose a short trail and work on one mission.</p>
+
+          <div class="grid-2">
+            <div>
+              <label for="timerMissionSelect">Mission</label>
+              <select id="timerMissionSelect"></select>
+            </div>
+            <div>
+              <label for="doneLooksLike">What does done look like?</label>
+              <input id="doneLooksLike" type="text" maxlength="70" placeholder="Read 5 pages, finish 1 page..." />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px;">
+            <button class="btn-secondary timerPreset" data-minutes="10">🐢 10 min</button>
+            <button class="btn-secondary timerPreset" data-minutes="15">🦊 15 min</button>
+            <button class="btn-secondary timerPreset" data-minutes="20">🦅 20 min</button>
+          </div>
+
+          <div class="timer-wrap">
+            <div class="timer-title" id="timerTitle">Pick a trail length and start your expedition.</div>
+            <div class="timer" id="timerDisplay">10:00</div>
+          </div>
+
+          <div class="row" style="justify-content:center;">
+            <button class="btn-primary" id="startTimerBtn">Start Expedition</button>
+            <button class="btn-secondary" id="pauseTimerBtn">Pause</button>
+            <button class="btn-berry" id="resetTimerBtn">Reset</button>
+          </div>
+
+          <div class="notice" id="timerNotice">Outdoor bonus: before you begin, notice one thing outside—a bird, a tree, the sky, or the wind.</div>
+          <div class="row" style="margin-top:10px;">
+            <button class="btn-sun" id="checkpointBtn">I Reached My Checkpoint</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>⭐ Adventure Wins</h2>
+          <p class="sub">Stars are earned for starting, trying, and finishing.</p>
           <div class="wins-list" id="winsList"></div>
-          <div class="footer-actions">
-            <button class="btn-danger" id="resetDayBtn">Reset day</button>
-          </div>
         </section>
-      </aside>
+      </div>
     </div>
+
+    <p class="footer-note">Everything saves in this browser, so the trail will still be here next time.</p>
   </div>
 
   <script>
-    const STORAGE_KEY = 'mission-control-mvp-v1';
-    const defaultState = () => ({
+    const STORAGE_KEY = 'trail-guide-v1';
+
+    const defaultState = {
       missions: [],
-      steps: [],
+      stars: 0,
       wins: [],
-      focusSessions: [],
-      distractions: [],
-      reflection: { wentWell: '', wasHard: '', tomorrowTip: '' }
-    });
+      recap: [],
+      timerMinutes: 10,
+      timerSecondsLeft: 600,
+      timerRunning: false,
+      timerMissionId: null,
+      timerDoneText: '',
+      todaySeed: new Date().toDateString()
+    };
 
     let state = loadState();
-    let timer = null;
-    let remainingSeconds = 15 * 60;
-    let activeDuration = 15;
+    let timerInterval = null;
 
-    function loadState() {
+    const missionInput = document.getElementById('missionInput');
+    const whereInput = document.getElementById('whereInput');
+    const outdoorInput = document.getElementById('outdoorInput');
+    const missionList = document.getElementById('missionList');
+    const missionNotice = document.getElementById('missionNotice');
+    const missionLimitText = document.getElementById('missionLimitText');
+
+    const gearMissionSelect = document.getElementById('gearMissionSelect');
+    const gearInput = document.getElementById('gearInput');
+    const gearPreview = document.getElementById('gearPreview');
+
+    const timerMissionSelect = document.getElementById('timerMissionSelect');
+    const doneLooksLike = document.getElementById('doneLooksLike');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerTitle = document.getElementById('timerTitle');
+    const timerNotice = document.getElementById('timerNotice');
+
+    const winsList = document.getElementById('winsList');
+    const recapList = document.getElementById('recapList');
+    const trailStrip = document.getElementById('trailStrip');
+
+    const missionsDoneStat = document.getElementById('missionsDoneStat');
+    const starsStat = document.getElementById('starsStat');
+    const streakStat = document.getElementById('streakStat');
+
+    const wentWell = document.getElementById('wentWell');
+    const tricky = document.getElementById('tricky');
+    const proud = document.getElementById('proud');
+
+    function loadState(){
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? { ...defaultState(), ...JSON.parse(raw) } : defaultState();
+        if(!raw) return structuredClone(defaultState);
+        const parsed = JSON.parse(raw);
+        return { ...structuredClone(defaultState), ...parsed };
       } catch {
-        return defaultState();
+        return structuredClone(defaultState);
       }
     }
 
-    function saveState() {
+    function saveState(){
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
-    function uid() {
+    function uid(){
       return Math.random().toString(36).slice(2, 10);
     }
 
-    function escapeHtml(str) {
-      return (str || '').replace(/[&<>"]/g, s => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[s]));
+    function ensureToday(){
+      const today = new Date().toDateString();
+      if(state.todaySeed !== today){
+        state = {
+          ...structuredClone(defaultState),
+          stars: state.stars,
+          wins: state.wins.slice(-12),
+          todaySeed: today
+        };
+        saveState();
+      }
     }
 
-    function addWin(text) {
-      state.wins.unshift({ id: uid(), text, time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) });
-      state.wins = state.wins.slice(0, 20);
-      saveState();
-      render();
+    function addWin(text){
+      state.wins.unshift({ id: uid(), text, time: new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) });
+      state.wins = state.wins.slice(0, 12);
     }
 
-    function render() {
-      const missionList = document.getElementById('missionList');
-      missionList.innerHTML = state.missions.length ? state.missions.map(m => `
-        <div class="mission ${m.done ? 'done' : ''}">
-          <div class="mission-top">
-            <div>
-              <strong>${escapeHtml(m.title)}</strong>
-              <div class="muted">When: ${escapeHtml(m.when || 'Not set')}</div>
-              <div class="muted">Obstacle: ${escapeHtml(m.obstacle || 'None added')}</div>
-            </div>
-            <div class="pill priority-${m.priority}">${m.priority} priority</div>
-          </div>
-          <div class="checkbox-row">
-            <input type="checkbox" ${m.done ? 'checked' : ''} onchange="toggleMission('${m.id}')" />
-            <span>${m.done ? 'Mission complete' : 'Mark complete when done'}</span>
-            <button class="btn-secondary" style="margin-left:auto;padding:7px 10px;" onclick="deleteMission('${m.id}')">Delete</button>
-          </div>
-        </div>
-      `).join('') : '<div class="muted">No missions yet. Add one small, clear mission to get started.</div>';
+    function addStars(count){
+      state.stars += count;
+    }
 
-      const stepsList = document.getElementById('stepsList');
-      stepsList.innerHTML = state.steps.length ? state.steps.map(s => `
-        <div class="step-item">
-          <strong>${escapeHtml(s.bigTask)}</strong>
-          <div class="muted" style="margin-top:6px;">${s.steps.map((step, i) => `${i + 1}. ${escapeHtml(step)}`).join('<br>')}</div>
-        </div>
-      `).join('') : '<div class="muted">No step lists yet. Save one for a big task.</div>';
+    function getMissionById(id){
+      return state.missions.find(m => m.id === id);
+    }
 
-      const winsList = document.getElementById('winsList');
-      winsList.innerHTML = state.wins.length ? state.wins.map(w => `
-        <div class="win-item"><strong>${escapeHtml(w.text)}</strong><div class="tiny">${escapeHtml(w.time)}</div></div>
-      `).join('') : '<div class="muted">Wins will show up here. Starting counts too.</div>';
-
+    function renderTrail(){
       const doneCount = state.missions.filter(m => m.done).length;
-      const total = state.missions.length;
-      const percent = total ? Math.round((doneCount / total) * 100) : 0;
-      document.getElementById('progressBar').style.width = percent + '%';
-      document.getElementById('progressText').textContent = `${doneCount} of ${total} missions done today`;
-      document.getElementById('statMissions').textContent = total;
-      document.getElementById('statFocus').textContent = state.focusSessions.length;
-      document.getElementById('statWins').textContent = state.wins.length;
-
-      document.getElementById('wentWell').value = state.reflection.wentWell || '';
-      document.getElementById('wasHard').value = state.reflection.wasHard || '';
-      document.getElementById('tomorrowTip').value = state.reflection.tomorrowTip || '';
+      trailStrip.innerHTML = '';
+      const icons = ['🏕️','🌿','🪨','🐾','🌲','⛰️','🏁'];
+      icons.forEach((icon, idx) => {
+        const div = document.createElement('div');
+        div.className = 'trail-step';
+        if(idx < doneCount) div.classList.add('done');
+        if(idx === doneCount) div.classList.add('current');
+        div.textContent = icon;
+        trailStrip.appendChild(div);
+      });
     }
 
-    function toggleMission(id) {
-      const mission = state.missions.find(m => m.id === id);
-      if (!mission) return;
-      mission.done = !mission.done;
-      saveState();
-      render();
-      if (mission.done) addWin(`Finished mission: ${mission.title}`);
+    function renderMissionSelectors(){
+      const options = state.missions.map(m => `<option value="${m.id}">${escapeHtml(m.title)}</option>`).join('');
+      gearMissionSelect.innerHTML = state.missions.length ? options : `<option value="">No missions yet</option>`;
+      timerMissionSelect.innerHTML = state.missions.length ? options : `<option value="">No missions yet</option>`;
+
+      if(state.timerMissionId && getMissionById(state.timerMissionId)){
+        timerMissionSelect.value = state.timerMissionId;
+      }
     }
 
-    function deleteMission(id) {
-      state.missions = state.missions.filter(m => m.id !== id);
-      saveState();
-      render();
+    function renderMissions(){
+      missionList.innerHTML = '';
+      missionLimitText.textContent = `${state.missions.length} of 3 missions packed.`;
+      if(state.missions.length === 0){
+        missionList.innerHTML = `<div class="empty">No missions yet. Add up to 3 for today’s trail.</div>`;
+      } else {
+        state.missions.forEach((mission, index) => {
+          const el = document.createElement('div');
+          el.className = `mission ${mission.done ? 'done' : ''}`;
+          const gearHtml = mission.gear.length
+            ? `<div class="gear-list-mini">${mission.gear.map((g, i) => `
+                <label class="gear-chip">
+                  <input type="checkbox" ${g.done ? 'checked' : ''} onchange="toggleGear('${mission.id}', ${i})" />
+                  <span>${escapeHtml(g.text)}</span>
+                </label>`).join('')}
+              </div>`
+            : `<div class="tiny">No gear packed yet.</div>`;
+
+          el.innerHTML = `
+            <div class="mission-head">
+              <div>
+                <h3 class="mission-title">${index + 1}. ${escapeHtml(mission.title)}</h3>
+                <div class="mission-meta">
+                  ${mission.where ? `<span class="pill">📍 ${escapeHtml(mission.where)}</span>` : ''}
+                  ${mission.outdoor ? `<span class="pill">${escapeHtml(mission.outdoor)}</span>` : ''}
+                </div>
+              </div>
+              <span class="pill">${mission.done ? 'Done!' : 'Ready'}</span>
+            </div>
+            <div><strong>Backpack:</strong></div>
+            ${gearHtml}
+            <div class="mission-actions">
+              <button class="btn-sky" onclick="setTimerMission('${mission.id}')">Choose for Expedition</button>
+              <button class="btn-primary" onclick="toggleMissionDone('${mission.id}')">${mission.done ? 'Mark Not Done' : 'Mark Done'}</button>
+              <button class="btn-berry" onclick="deleteMission('${mission.id}')">Remove</button>
+            </div>
+          `;
+          missionList.appendChild(el);
+        });
+      }
+
+      const full = state.missions.length >= 3;
+      missionNotice.textContent = full
+        ? 'Backpack full: choose only the 3 most important missions for today.'
+        : 'Tip: only 3 missions keeps the day clear and calm.';
     }
 
-    window.toggleMission = toggleMission;
-    window.deleteMission = deleteMission;
-
-    document.getElementById('addMissionBtn').addEventListener('click', () => {
-      const title = document.getElementById('missionTitle').value.trim();
-      const when = document.getElementById('missionWhen').value.trim();
-      const obstacle = document.getElementById('missionObstacle').value.trim();
-      const priority = document.getElementById('missionPriority').value;
-      if (!title) return alert('Add a mission first.');
-      state.missions.push({ id: uid(), title, when, obstacle, priority, done: false });
-      saveState();
-      render();
-      addWin(`Planned a mission: ${title}`);
-      document.getElementById('missionTitle').value = '';
-      document.getElementById('missionWhen').value = '';
-      document.getElementById('missionObstacle').value = '';
-    });
-
-    document.getElementById('generateStepsBtn').addEventListener('click', () => {
-      const bigTask = document.getElementById('bigTask').value.trim();
-      const suggestions = [
-        'Get the materials you need',
-        'Read the directions once',
-        'Do the first tiny part only',
-        'Check your work',
-        'Put it in your bag or turn it in'
-      ];
-      if (!bigTask) {
-        document.getElementById('stepPrompt').value = suggestions.join('\n');
+    function renderGearPreview(){
+      const mission = getMissionById(gearMissionSelect.value) || state.missions[0];
+      if(!mission){
+        gearPreview.innerHTML = `<div class="empty">Choose a mission first.</div>`;
         return;
       }
+      gearPreview.innerHTML = `
+        <div class="choice">
+          <strong>${escapeHtml(mission.title)}</strong>
+          <div class="tiny" style="margin-top:6px;">Things in the backpack:</div>
+          <div class="gear-list-mini" style="margin-top:10px;">
+            ${mission.gear.length ? mission.gear.map((g, i) => `
+              <label class="gear-chip">
+                <input type="checkbox" ${g.done ? 'checked' : ''} onchange="toggleGear('${mission.id}', ${i})" />
+                <span>${escapeHtml(g.text)}</span>
+              </label>
+            `).join('') : '<div class="empty">Nothing added yet.</div>'}
+          </div>
+        </div>
+      `;
+    }
 
-      const lower = bigTask.toLowerCase();
-      let custom = suggestions;
-      if (lower.includes('essay') || lower.includes('write') || lower.includes('report')) {
-        custom = ['Open your doc or notebook', 'Write one sentence about the topic', 'Make a tiny outline', 'Write the first paragraph', 'Check spelling and turn it in'];
-      } else if (lower.includes('math')) {
-        custom = ['Get worksheet and pencil', 'Do the first 3 problems', 'Check those 3', 'Do the next small set', 'Put it in your folder'];
-      } else if (lower.includes('study') || lower.includes('quiz') || lower.includes('test')) {
-        custom = ['Get notes or book', 'Read one short section', 'Make 5 flashcards or notes', 'Quiz yourself once', 'Circle what you still need to review'];
+    function renderWins(){
+      winsList.innerHTML = state.wins.length
+        ? state.wins.map(win => `<div class="choice">⭐ ${escapeHtml(win.text)} <div class="tiny">${escapeHtml(win.time)}</div></div>`).join('')
+        : `<div class="empty">Adventure wins will appear here.</div>`;
+    }
+
+    function renderRecap(){
+      recapList.innerHTML = state.recap.length
+        ? state.recap.map(item => `
+          <div class="choice">
+            <div><strong>🔥 ${escapeHtml(item.date)}</strong></div>
+            <div class="tiny" style="margin-top:8px;">Went well: ${escapeHtml(item.wentWell || '—')}</div>
+            <div class="tiny">Tricky: ${escapeHtml(item.tricky || '—')}</div>
+            <div class="tiny">Proud of: ${escapeHtml(item.proud || '—')}</div>
+          </div>
+        `).join('')
+        : `<div class="empty">No campfire stories saved yet.</div>`;
+    }
+
+    function renderStats(){
+      const doneCount = state.missions.filter(m => m.done).length;
+      missionsDoneStat.textContent = doneCount;
+      starsStat.textContent = state.stars;
+      streakStat.textContent = `${state.missions.length}/3`;
+    }
+
+    function renderTimer(){
+      timerDisplay.textContent = formatTime(state.timerSecondsLeft);
+      const mission = getMissionById(timerMissionSelect.value || state.timerMissionId);
+      const missionName = mission ? mission.title : 'your mission';
+      if(state.timerRunning){
+        timerTitle.textContent = `Expedition in progress: ${missionName}`;
+      } else {
+        timerTitle.textContent = `Ready for ${missionName}.`;
       }
-      document.getElementById('stepPrompt').value = custom.join('\n');
-    });
+      if(state.timerDoneText){
+        doneLooksLike.value = state.timerDoneText;
+      }
+    }
 
-    document.getElementById('saveStepsBtn').addEventListener('click', () => {
-      const bigTask = document.getElementById('bigTask').value.trim();
-      const raw = document.getElementById('stepPrompt').value.trim();
-      if (!bigTask || !raw) return alert('Add a big task and at least one step.');
-      const steps = raw.split('\n').map(s => s.trim()).filter(Boolean);
-      state.steps.unshift({ id: uid(), bigTask, steps });
-      state.steps = state.steps.slice(0, 8);
+    function renderAll(){
+      ensureToday();
+      renderTrail();
+      renderMissionSelectors();
+      renderMissions();
+      renderGearPreview();
+      renderWins();
+      renderRecap();
+      renderStats();
+      renderTimer();
       saveState();
-      render();
-      addWin(`Broke down a big task: ${bigTask}`);
-      document.getElementById('bigTask').value = '';
-      document.getElementById('stepPrompt').value = '';
-    });
-
-    function updateTimerDisplay() {
-      const mins = Math.floor(remainingSeconds / 60).toString().padStart(2, '0');
-      const secs = (remainingSeconds % 60).toString().padStart(2, '0');
-      document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
     }
 
-    function syncTimerToSelection() {
-      activeDuration = Number(document.getElementById('focusMinutes').value || 15);
-      if (!timer) {
-        remainingSeconds = activeDuration * 60;
-        updateTimerDisplay();
+    function formatTime(totalSeconds){
+      const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+      const secs = (totalSeconds % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function startTimer(){
+      if(state.timerRunning) return;
+      if(!timerMissionSelect.value){
+        timerNotice.textContent = 'Pick a mission before starting your expedition.';
+        return;
       }
-    }
+      state.timerMissionId = timerMissionSelect.value;
+      state.timerDoneText = doneLooksLike.value.trim();
+      if(state.timerSecondsLeft <= 0){
+        state.timerSecondsLeft = state.timerMinutes * 60;
+      }
+      state.timerRunning = true;
+      timerNotice.textContent = 'Stay with one mission. Tiny steps count.';
+      addWin('Started an expedition');
+      addStars(1);
+      renderAll();
 
-    document.getElementById('focusMinutes').addEventListener('change', syncTimerToSelection);
-
-    document.getElementById('startTimerBtn').addEventListener('click', () => {
-      const task = document.getElementById('focusTask').value.trim();
-      const done = document.getElementById('focusDone').value.trim();
-      if (!task) return alert('Add a focus task first.');
-      document.getElementById('currentFocusNote').textContent = `Working on: ${task}${done ? ' | Done = ' + done : ''}`;
-      if (timer) return;
-      addWin(`Started a focus session: ${task}`);
-      timer = setInterval(() => {
-        remainingSeconds -= 1;
-        updateTimerDisplay();
-        if (remainingSeconds <= 0) {
-          clearInterval(timer);
-          timer = null;
-          document.getElementById('currentFocusNote').textContent = 'Time is up. Log your session and take a short break.';
-          alert('Focus session complete!');
+      timerInterval = setInterval(() => {
+        state.timerSecondsLeft -= 1;
+        if(state.timerSecondsLeft <= 0){
+          clearInterval(timerInterval);
+          state.timerRunning = false;
+          state.timerSecondsLeft = 0;
+          addWin('Finished an expedition timer');
+          addStars(1);
+          timerNotice.textContent = 'Trail timer complete! Did you reach your checkpoint?';
+          renderAll();
+        } else {
+          saveState();
+          renderTimer();
         }
       }, 1000);
-    });
+    }
 
-    document.getElementById('pauseTimerBtn').addEventListener('click', () => {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-        document.getElementById('currentFocusNote').textContent = 'Paused. Breathe, then restart when ready.';
+    function pauseTimer(){
+      state.timerRunning = false;
+      clearInterval(timerInterval);
+      timerNotice.textContent = 'Expedition paused.';
+      renderAll();
+    }
+
+    function resetTimer(){
+      clearInterval(timerInterval);
+      state.timerRunning = false;
+      state.timerSecondsLeft = state.timerMinutes * 60;
+      timerNotice.textContent = 'Expedition reset.';
+      renderAll();
+    }
+
+    function setTimerMinutes(minutes){
+      state.timerMinutes = minutes;
+      state.timerSecondsLeft = minutes * 60;
+      clearInterval(timerInterval);
+      state.timerRunning = false;
+      timerNotice.textContent = `Trail length set to ${minutes} minutes.`;
+      renderAll();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    document.getElementById('addMissionBtn').addEventListener('click', () => {
+      const title = missionInput.value.trim();
+      const where = whereInput.value.trim();
+      const outdoor = outdoorInput.value;
+      if(!title){
+        missionNotice.textContent = 'Give your mission a name first.';
+        return;
       }
+      if(state.missions.length >= 3){
+        missionNotice.textContent = 'You already have 3 missions. Finish or remove one before adding another.';
+        return;
+      }
+      state.missions.push({
+        id: uid(),
+        title,
+        where,
+        outdoor,
+        done:false,
+        gear:[]
+      });
+      missionInput.value = '';
+      whereInput.value = '';
+      outdoorInput.value = '';
+      missionNotice.textContent = 'Mission packed! Nice choice.';
+      addWin(`Packed mission: ${title}`);
+      renderAll();
     });
 
-    document.getElementById('resetTimerBtn').addEventListener('click', () => {
-      clearInterval(timer);
-      timer = null;
-      syncTimerToSelection();
-      document.getElementById('currentFocusNote').textContent = 'Pick a task and press start.';
+    document.getElementById('addGearBtn').addEventListener('click', () => {
+      const missionId = gearMissionSelect.value;
+      const text = gearInput.value.trim();
+      const mission = getMissionById(missionId);
+      if(!mission || !text) return;
+      mission.gear.push({ text, done:false });
+      gearInput.value = '';
+      addWin(`Packed gear for ${mission.title}`);
+      renderAll();
     });
 
-    document.getElementById('captureDistractionBtn').addEventListener('click', () => {
-      const note = document.getElementById('distractionNote').value.trim();
-      if (!note) return alert('Write the distraction first.');
-      state.distractions.unshift({ id: uid(), note });
+    gearMissionSelect.addEventListener('change', renderGearPreview);
+    timerMissionSelect.addEventListener('change', () => {
+      state.timerMissionId = timerMissionSelect.value;
+      renderTimer();
       saveState();
-      addWin(`Captured a distraction instead of chasing it`);
-      document.getElementById('distractionNote').value = '';
     });
-
-    document.getElementById('finishSessionBtn').addEventListener('click', () => {
-      const task = document.getElementById('focusTask').value.trim();
-      const done = document.getElementById('focusDone').value.trim();
-      if (!task) return alert('Add the task you worked on.');
-      state.focusSessions.unshift({ id: uid(), task, done, minutes: activeDuration, completedAt: new Date().toISOString() });
+    doneLooksLike.addEventListener('input', () => {
+      state.timerDoneText = doneLooksLike.value;
       saveState();
-      render();
-      addWin(`Logged a ${activeDuration}-minute focus session`);
-      document.getElementById('focusTask').value = '';
-      document.getElementById('focusDone').value = '';
-      document.getElementById('currentFocusNote').textContent = 'Nice work. Ready for the next step when you are.';
     });
 
-    document.getElementById('saveReflectionBtn').addEventListener('click', () => {
-      state.reflection = {
-        wentWell: document.getElementById('wentWell').value.trim(),
-        wasHard: document.getElementById('wasHard').value.trim(),
-        tomorrowTip: document.getElementById('tomorrowTip').value.trim()
+    document.querySelectorAll('.timerPreset').forEach(btn => {
+      btn.addEventListener('click', () => setTimerMinutes(Number(btn.dataset.minutes)));
+    });
+
+    document.getElementById('startTimerBtn').addEventListener('click', startTimer);
+    document.getElementById('pauseTimerBtn').addEventListener('click', pauseTimer);
+    document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
+
+    document.getElementById('checkpointBtn').addEventListener('click', () => {
+      const mission = getMissionById(timerMissionSelect.value || state.timerMissionId);
+      if(mission){
+        addWin(`Reached checkpoint for ${mission.title}`);
+        addStars(1);
+        timerNotice.textContent = 'Checkpoint reached! Great job staying on the trail.';
+      } else {
+        timerNotice.textContent = 'Checkpoint saved.';
+      }
+      renderAll();
+    });
+
+    document.getElementById('saveRecapBtn').addEventListener('click', () => {
+      state.recap.unshift({
+        id: uid(),
+        date: new Date().toLocaleDateString(),
+        wentWell: wentWell.value.trim(),
+        tricky: tricky.value.trim(),
+        proud: proud.value.trim()
+      });
+      state.recap = state.recap.slice(0, 7);
+      if(wentWell.value.trim() || proud.value.trim()){
+        addStars(1);
+      }
+      wentWell.value = '';
+      tricky.value = '';
+      proud.value = '';
+      addWin('Saved a campfire story');
+      renderAll();
+    });
+
+    document.getElementById('clearDayBtn').addEventListener('click', () => {
+      const keepStars = state.stars;
+      const keepWins = state.wins.slice(0, 12);
+      const keepRecap = state.recap.slice(0, 7);
+      state = {
+        ...structuredClone(defaultState),
+        stars: keepStars,
+        wins: keepWins,
+        recap: keepRecap,
+        todaySeed: new Date().toDateString()
       };
-      saveState();
-      render();
-      addWin('Saved a reflection');
+      clearInterval(timerInterval);
+      renderAll();
     });
 
-    document.getElementById('resetDayBtn').addEventListener('click', () => {
-      if (!confirm('Reset today\'s missions, steps, wins, sessions, and reflection?')) return;
-      state = defaultState();
-      saveState();
-      clearInterval(timer);
-      timer = null;
-      remainingSeconds = Number(document.getElementById('focusMinutes').value || 15) * 60;
-      updateTimerDisplay();
-      document.getElementById('currentFocusNote').textContent = 'Pick a task and press start.';
-      render();
-    });
+    window.toggleMissionDone = function(id){
+      const mission = getMissionById(id);
+      if(!mission) return;
+      mission.done = !mission.done;
+      if(mission.done){
+        addStars(2);
+        addWin(`Finished mission: ${mission.title}`);
+      }
+      renderAll();
+    }
 
-    syncTimerToSelection();
-    render();
+    window.deleteMission = function(id){
+      state.missions = state.missions.filter(m => m.id !== id);
+      if(state.timerMissionId === id){
+        state.timerMissionId = null;
+      }
+      renderAll();
+    }
+
+    window.toggleGear = function(missionId, index){
+      const mission = getMissionById(missionId);
+      if(!mission || !mission.gear[index]) return;
+      mission.gear[index].done = !mission.gear[index].done;
+      renderAll();
+    }
+
+    window.setTimerMission = function(id){
+      state.timerMissionId = id;
+      timerMissionSelect.value = id;
+      timerNotice.textContent = 'Mission chosen for expedition.';
+      renderAll();
+    }
+
+    renderAll();
   </script>
 </body>
 </html>

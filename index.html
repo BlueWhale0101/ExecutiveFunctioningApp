@@ -431,6 +431,41 @@
       padding:8px 0 14px;
     }
 
+
+    details.collapsible{
+      padding:0;
+      overflow:hidden;
+    }
+    details.collapsible > summary{
+      list-style:none;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:18px;
+      font-weight:900;
+      font-size:1.1rem;
+    }
+    details.collapsible > summary::-webkit-details-marker{
+      display:none;
+    }
+    details.collapsible > summary:after{
+      content:"▾";
+      font-size:1rem;
+      color:var(--muted);
+      margin-left:auto;
+    }
+    details.collapsible:not([open]) > summary{
+      margin:0;
+    }
+    details.collapsible[open] > summary:after{
+      content:"▴";
+    }
+    .collapse-content{
+      padding:0 18px 18px;
+    }
+
     @media (max-width: 920px){
       .layout, .hero-grid, .grid-2, .grid-3, .grid-4{
         grid-template-columns:1fr;
@@ -556,30 +591,6 @@
             <div class="gear-list" id="gearPreview"></div>
           </section>
 
-          <section class="card">
-            <h2>🔥 Campfire Recap</h2>
-            <p class="sub">Tell the story of your day in a few short answers.</p>
-
-            <div class="grid-3">
-              <div>
-                <label for="wentWell">What went well?</label>
-                <input id="wentWell" type="text" maxlength="80" placeholder="I started fast..." />
-              </div>
-              <div>
-                <label for="tricky">What was tricky?</label>
-                <input id="tricky" type="text" maxlength="80" placeholder="The first page felt hard..." />
-              </div>
-              <div>
-                <label for="proud">What are you proud of?</label>
-                <input id="proud" type="text" maxlength="80" placeholder="I finished my reading..." />
-              </div>
-            </div>
-            <div class="row" style="margin-top:12px;">
-              <button class="btn-sun" id="saveRecapBtn">Save Campfire Story</button>
-              <button class="btn-secondary" id="clearDayBtn">Start New Day</button>
-            </div>
-            <div class="recap-list" id="recapList"></div>
-          </section>
         </div>
 
         <div class="stack">
@@ -650,12 +661,44 @@
               <button class="btn-sun" id="checkpointBtn">I Reached My Checkpoint</button>
             </div>
           </section>
+          
+          <details class="card collapsible" id="campfireDetails" open>
+            <summary><span>🔥 Campfire Recap</span><span class="tiny">Open / close</span></summary>
+            <div class="collapse-content">
 
-          <section class="card">
-            <h2>⭐ Adventure Wins</h2>
+            <p class="sub">Tell the story of your day in a few short answers.</p>
+
+            <div class="grid-3">
+              <div>
+                <label for="wentWell">What went well?</label>
+                <input id="wentWell" type="text" maxlength="80" placeholder="I started fast..." />
+              </div>
+              <div>
+                <label for="tricky">What was tricky?</label>
+                <input id="tricky" type="text" maxlength="80" placeholder="The first page felt hard..." />
+              </div>
+              <div>
+                <label for="proud">What are you proud of?</label>
+                <input id="proud" type="text" maxlength="80" placeholder="I finished my reading..." />
+              </div>
+            </div>
+            <div class="row" style="margin-top:12px;">
+              <button class="btn-sun" id="saveRecapBtn">Save Campfire Story</button>
+              <button class="btn-secondary" id="clearDayBtn">Start New Day</button>
+            </div>
+            <div class="recap-list" id="recapList"></div>
+            </div>
+          </details>
+
+          <details class="card collapsible" id="winsDetails" open>
+            <summary><span>⭐ Adventure Wins</span><span class="tiny">Open / close</span></summary>
+            <div class="collapse-content">
+
             <p class="sub">Stars are earned for starting, trying, and finishing.</p>
             <div class="wins-list" id="winsList"></div>
-          </section>
+            </div>
+          </details>
+
         </div>
       </div>
 

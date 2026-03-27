@@ -41,6 +41,44 @@
       margin-bottom:12px;
       flex-wrap:wrap;
     }
+
+    .toolbar{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      margin-bottom:12px;
+      overflow:hidden;
+    }
+    .toolbar > summary{
+      list-style:none;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      font-weight:900;
+      background:linear-gradient(180deg, #fbfdf9, #f4f8f2);
+    }
+    .toolbar > summary::-webkit-details-marker{
+      display:none;
+    }
+    .toolbar > summary::after{
+      content:"▾";
+      color:var(--muted);
+      margin-left:auto;
+    }
+    .toolbar[open] > summary::after{
+      content:"▴";
+    }
+    .toolbar-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      padding:0 16px 16px;
+    }
+
     .hero{
       background: linear-gradient(135deg, #4d7d52, #6f9a5f 48%, #8fc0d8);
       color:white;
@@ -567,7 +605,7 @@
       pointer-events:none;
       z-index:999;
       display:none;
-      transition:all .2s ease;
+      transition:top .18s ease, left .18s ease, width .18s ease, height .18s ease;
     }
     .tutorial-callout{
       margin-top:10px;
@@ -616,12 +654,21 @@
 </head>
 <body>
   <div class="app">
-    <div class="topbar">
-      <button class="btn-secondary" id="openChildTutorialBtn" data-tutorial-target="child-tutorial-button">Child Tutorial</button>
-      <button class="btn-secondary" id="openTutorTutorialBtn" data-tutorial-target="tutor-tutorial-button">Tutor Tutorial</button>
-      <button class="btn-primary" id="showKidViewBtn">Kid View</button>
-      <button class="btn-lav" id="showAdultViewBtn">Parent / Teacher View</button>
-    </div>
+    <details class="toolbar" id="toolbarMenu">
+      <summary>
+        <span>🧰 Tools & Views</span>
+        <span class="tiny">Open / close</span>
+      </summary>
+      <div class="toolbar-actions">
+        <button class="btn-secondary" id="openChildTutorialBtn" data-tutorial-target="child-tutorial-button">Child Tutorial</button>
+        <button class="btn-secondary" id="openTutorTutorialBtn" data-tutorial-target="tutor-tutorial-button">Tutor Tutorial</button>
+        <button class="btn-secondary" id="exportDataBtn" data-tutorial-target="export-data">Export Data</button>
+        <button class="btn-secondary" id="importDataBtn" data-tutorial-target="import-data">Import Data</button>
+        <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" />
+        <button class="btn-primary" id="showKidViewBtn">Kid View</button>
+        <button class="btn-lav" id="showAdultViewBtn">Parent / Teacher View</button>
+      </div>
+    </details>
 
     <div id="kidView" class="view active">
       <section class="hero">
@@ -812,7 +859,7 @@
         </div>
       </div>
 
-      <p class="footer-note">Everything saves in this browser, so the trail will still be here next time.</p>
+      <p class="footer-note">Everything saves in this browser, and you can now export a full backup file too.</p>
     </div>
 
     <div id="adultView" class="view" data-tutorial-target="adult-view">
@@ -851,6 +898,20 @@
             <div class="metric"><strong id="weeklyMissionsDone">0</strong><span>Missions Finished</span></div>
             <div class="metric"><strong id="weeklyExpeditions">0</strong><span>Expeditions Started</span></div>
             <div class="metric"><strong id="weeklyStars">0</strong><span>Stars This Week</span></div>
+          </div>
+        </section>
+
+        <section class="card" data-tutorial-target="backup-card">
+          <h2>Backup and Restore</h2>
+          <p class="sub">Export all app data to a file for safekeeping, then import it later if you need to recover the app state on this or another device.</p>
+          <div class="row">
+            <button class="btn-secondary" id="adultExportDataBtn">Export Full Backup</button>
+            <button class="btn-secondary" id="adultImportDataBtn">Import Backup</button>
+          </div>
+          <div class="notice" id="backupNotice">Recommended: export a backup at least once a week, or after making important notes.</div>
+          <div class="choice" id="backupReminderCard" style="margin-top:12px;">
+            <strong>Backup Reminder</strong>
+            <div class="tiny" id="backupReminderText" style="margin-top:8px;">No backup recorded yet.</div>
           </div>
         </section>
 
@@ -1009,6 +1070,13 @@
           target: 'wins',
           callout: 'This section helps the child see that effort, starts, and checkpoints matter too.',
           bullets: ['Wins appear as the child uses the app.', 'Use them to praise progress, not perfection.', 'Stars, badges, and the animal guide grow over time.']
+        },
+        {
+          title: 'Step 6: Save a Backup',
+          body: 'A grown-up can export the app data so missions, notes, and progress are not lost.',
+          target: 'export-data',
+          callout: 'Use Export Data from the top bar whenever you want a full backup file.',
+          bullets: ['Export after important updates.', 'Keep the file somewhere easy to find.', 'That file can be imported later to restore the app.']
         }
       ],
       tutor: [
@@ -1053,6 +1121,13 @@
           target: 'print-report',
           callout: 'This opens the browser print dialog, where you can save the report as a PDF.',
           bullets: ['Switch to Parent / Teacher View first.', 'Check the weekly layout before printing.', 'Save to PDF or print on paper.']
+        },
+        {
+          title: 'Back Up and Restore Data',
+          body: 'The app can export and import a full backup of all child and adult data.',
+          target: 'backup-card',
+          callout: 'This is the recovery tool for browser resets, device moves, or accidental data loss.',
+          bullets: ['Export backups regularly.', 'Import a backup to restore missions, notes, history, and settings.', 'Use this before major browser/device changes.']
         }
       ]
     };
@@ -1127,6 +1202,27 @@
     }
 
 
+    function positionTutorialSpotlight(target){
+      const spotlight = document.getElementById('tutorialSpotlight');
+      if(!target){
+        spotlight.style.display = 'none';
+        return;
+      }
+
+      const rect = target.getBoundingClientRect();
+      const pad = 10;
+      const left = Math.max(8, rect.left - pad);
+      const top = Math.max(8, rect.top - pad);
+      const right = Math.min(window.innerWidth - 8, rect.right + pad);
+      const bottom = Math.min(window.innerHeight - 8, rect.bottom + pad);
+
+      spotlight.style.display = 'block';
+      spotlight.style.left = `${left}px`;
+      spotlight.style.top = `${top}px`;
+      spotlight.style.width = `${Math.max(0, right - left)}px`;
+      spotlight.style.height = `${Math.max(0, bottom - top)}px`;
+    }
+
     function setTutorialTarget(targetName){
       const spotlight = document.getElementById('tutorialSpotlight');
       const target = targetName ? document.querySelector(`[data-tutorial-target="${targetName}"]`) : null;
@@ -1135,9 +1231,9 @@
         return;
       }
 
-      if(targetName === 'adult-view' || targetName === 'weekly-overview' || targetName === 'print-report'){
+      if(targetName === 'adult-view' || targetName === 'weekly-overview' || targetName === 'print-report' || targetName === 'backup-card'){
         showView('adult');
-      } else if(targetName === 'missions' || targetName === 'gear' || targetName === 'expedition' || targetName === 'campfire' || targetName === 'wins' || targetName === 'child-tutorial-button'){
+      } else if(targetName === 'missions' || targetName === 'gear' || targetName === 'expedition' || targetName === 'campfire' || targetName === 'wins' || targetName === 'child-tutorial-button' || targetName === 'export-data' || targetName === 'import-data'){
         showView('kid');
       }
 
@@ -1156,16 +1252,12 @@
         return;
       }
 
-      refreshedTarget.scrollIntoView({ behavior:'smooth', block:'center' });
+      refreshedTarget.scrollIntoView({ behavior:'smooth', block:'center', inline:'nearest' });
 
-      setTimeout(() => {
-        const rect = refreshedTarget.getBoundingClientRect();
-        spotlight.style.display = 'block';
-        spotlight.style.top = `${Math.max(8, rect.top - 8)}px`;
-        spotlight.style.left = `${Math.max(8, rect.left - 8)}px`;
-        spotlight.style.width = `${Math.min(window.innerWidth - 16, rect.width + 16)}px`;
-        spotlight.style.height = `${Math.min(window.innerHeight - 16, rect.height + 16)}px`;
-      }, 160);
+      requestAnimationFrame(() => {
+        positionTutorialSpotlight(refreshedTarget);
+        setTimeout(() => positionTutorialSpotlight(refreshedTarget), 220);
+      });
     }
 
     function clearTutorialTarget(){
@@ -1220,7 +1312,10 @@
         'weekly-overview':'📊',
         'print-report':'🖨️',
         'child-tutorial-button':'🌲',
-        'tutor-tutorial-button':'📘'
+        'tutor-tutorial-button':'📘',
+        'export-data':'💾',
+        'import-data':'📥',
+        'backup-card':'🛟'
       };
       const emoji = emojiMap[step.target] || '🌿';
       document.getElementById('tutorialBullets').innerHTML = step.bullets.map((x,i) => `<div class="tutorial-bullet"><div style="display:flex; gap:8px; align-items:flex-start;"><span>${emoji}</span><div>${escapeHtml(x)}</div></div></div>`).join('');
@@ -1256,6 +1351,7 @@
       adultNotes: [],
       weeklyHistory: [],
       tutorialSeen: { child: false, tutor: false },
+      lastBackupAt: null,
       timerMinutes: 10,
       timerSecondsLeft: 600,
       timerRunning: false,
@@ -1324,6 +1420,7 @@
     const weeklyStrength = document.getElementById('weeklyStrength');
     const weeklySupportNeed = document.getElementById('weeklySupportNeed');
     const weeklyNextStep = document.getElementById('weeklyNextStep');
+    const backupReminderText = document.getElementById('backupReminderText');
 
     function loadState(){
       try {
@@ -1338,6 +1435,86 @@
 
     function saveState(){
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function makeBackupPayload(){
+      return {
+        app: 'Trail Guide',
+        version: 'v12',
+        exportedAt: new Date().toISOString(),
+        storageKey: STORAGE_KEY,
+        state
+      };
+    }
+
+    function downloadBackup(){
+      state.lastBackupAt = new Date().toISOString();
+      saveState();
+      const payload = makeBackupPayload();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `trail-guide-backup-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      const backupNotice = document.getElementById('backupNotice');
+      if(backupNotice){
+        backupNotice.textContent = 'Backup exported successfully. Keep the JSON file somewhere safe.';
+        backupNotice.classList.add('success');
+      }
+    }
+
+    function normalizeImportedState(maybeState){
+      const incoming = maybeState && maybeState.state ? maybeState.state : maybeState;
+      if(!incoming || typeof incoming !== 'object'){
+        throw new Error('That file does not contain valid Trail Guide data.');
+      }
+
+      return {
+        ...structuredClone(defaultState),
+        ...incoming,
+        missions: Array.isArray(incoming.missions) ? incoming.missions : [],
+        wins: Array.isArray(incoming.wins) ? incoming.wins : [],
+        recap: Array.isArray(incoming.recap) ? incoming.recap : [],
+        adultNotes: Array.isArray(incoming.adultNotes) ? incoming.adultNotes : [],
+        weeklyHistory: Array.isArray(incoming.weeklyHistory) ? incoming.weeklyHistory : [],
+        tutorialSeen: incoming.tutorialSeen && typeof incoming.tutorialSeen === 'object'
+          ? { child: !!incoming.tutorialSeen.child, tutor: !!incoming.tutorialSeen.tutor }
+          : { child: false, tutor: false },
+        lastBackupAt: incoming.lastBackupAt || null
+      };
+    }
+
+    function importBackupFile(file){
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          state = normalizeImportedState(parsed);
+          clearInterval(timerInterval);
+          timerInterval = null;
+          state.timerRunning = false;
+          if(!Number.isFinite(state.timerSecondsLeft)) state.timerSecondsLeft = state.timerMinutes * 60;
+          saveState();
+          renderAll();
+          showView('adult');
+          const backupNotice = document.getElementById('backupNotice');
+          if(backupNotice){
+            backupNotice.textContent = 'Backup imported successfully. The app state has been restored.';
+            backupNotice.classList.add('success');
+          }
+        } catch (err) {
+          const msg = err && err.message ? err.message : 'Import failed.';
+          alert(msg);
+        }
+      };
+      reader.readAsText(file);
     }
 
     function uid(){
@@ -1559,6 +1736,27 @@
       }
     }
 
+
+    function getBackupReminderText(){
+      if(!state.lastBackupAt){
+        return 'No backup recorded yet. Export a full backup now so you can recover the app later if needed.';
+      }
+
+      const now = new Date();
+      const last = new Date(state.lastBackupAt);
+      const diffMs = now - last;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const prettyDate = last.toLocaleDateString([], { year:'numeric', month:'short', day:'numeric' });
+
+      if(diffDays <= 2){
+        return `Last backup: ${prettyDate}. Backup status looks good.`;
+      }
+      if(diffDays <= 7){
+        return `Last backup: ${prettyDate}. Consider exporting a fresh backup soon.`;
+      }
+      return `Last backup: ${prettyDate}. A new backup is recommended now.`;
+    }
+
     function renderAdultView(){
       adultStarsStat.textContent = state.stars;
       adultCompletedStat.textContent = state.missions.filter(m => m.done).length;
@@ -1591,6 +1789,9 @@
       weeklyStrength.textContent = insights.strength;
       weeklySupportNeed.textContent = insights.support;
       weeklyNextStep.textContent = insights.nextStep;
+      if(backupReminderText){
+        backupReminderText.textContent = getBackupReminderText();
+      }
 
       adultMissionTable.innerHTML = state.missions.length ? state.missions.map(m => {
         const gearDone = m.gear.filter(g => g.done).length;
@@ -1723,6 +1924,14 @@
 
     document.getElementById('openChildTutorialBtn').addEventListener('click', () => openTutorial('child'));
     document.getElementById('openTutorTutorialBtn').addEventListener('click', () => openTutorial('tutor'));
+    document.getElementById('exportDataBtn').addEventListener('click', downloadBackup);
+    document.getElementById('importDataBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
+    document.getElementById('adultExportDataBtn').addEventListener('click', downloadBackup);
+    document.getElementById('adultImportDataBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
+    document.getElementById('importFileInput').addEventListener('change', (event) => {
+      importBackupFile(event.target.files && event.target.files[0]);
+      event.target.value = '';
+    });
     document.getElementById('closeTutorialBtn').addEventListener('click', () => {
       showView(tutorialMode === 'tutor' ? 'adult' : 'kid');
       closeTutorial();
@@ -1750,9 +1959,19 @@
       const modal = document.getElementById('tutorialModal');
       if(modal.classList.contains('open')){
         const step = TUTORIALS[tutorialMode][tutorialStep];
-        setTutorialTarget(step.target);
+        const target = document.querySelector(`[data-tutorial-target="${step.target}"]`);
+        positionTutorialSpotlight(target);
       }
     });
+
+    window.addEventListener('scroll', () => {
+      const modal = document.getElementById('tutorialModal');
+      if(modal.classList.contains('open')){
+        const step = TUTORIALS[tutorialMode][tutorialStep];
+        const target = document.querySelector(`[data-tutorial-target="${step.target}"]`);
+        positionTutorialSpotlight(target);
+      }
+    }, { passive: true });
 
     document.getElementById('showKidViewBtn').addEventListener('click', () => showView('kid'));
     document.getElementById('showAdultViewBtn').addEventListener('click', () => showView('adult'));

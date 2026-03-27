@@ -478,11 +478,90 @@
       }
     }
 
+    
+    .tutorial-modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      z-index:1000;
+    }
+    .tutorial-modal.open{
+      display:block;
+    }
+    .tutorial-backdrop{
+      position:absolute;
+      inset:0;
+      background:rgba(20,30,24,.45);
+      backdrop-filter:blur(3px);
+    }
+    .tutorial-panel{
+      position:relative;
+      max-width:860px;
+      margin:6vh auto;
+      background:white;
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:0 20px 60px rgba(0,0,0,.2);
+      padding:22px;
+      z-index:1;
+    }
+    .tutorial-bullets{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+    .tutorial-bullet{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background:#fbfdf9;
+    }
+    .tutorial-progress-wrap{
+      margin-top:16px;
+    }
+    .tutorial-progress{
+      height:12px;
+      border-radius:999px;
+      background:#edf2eb;
+      overflow:hidden;
+      margin-top:6px;
+      border:1px solid #dce5d8;
+    }
+    .tutorial-progress > div{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--forest), var(--sky));
+    }
+    .week-bar-card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background:#fbfdf9;
+      text-align:center;
+    }
+    .week-bar{
+      height:100px;
+      border-radius:12px;
+      background:#edf2eb;
+      border:1px solid #dce5d8;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      overflow:hidden;
+      margin:8px 0;
+    }
+    .week-bar-fill{
+      width:100%;
+      background:linear-gradient(180deg, var(--sky), var(--forest));
+      border-radius:10px 10px 0 0;
+      min-height:4px;
+    }
+
     @media print{
       body{
         background:white;
       }
-      .topbar, #kidView .hero, #kidView .footer-note{
+      .topbar, #kidView .hero, #kidView .footer-note, #tutorialModal{
         display:none !important;
       }
       #kidView{
@@ -509,6 +588,8 @@
 <body>
   <div class="app">
     <div class="topbar">
+      <button class="btn-secondary" id="openChildTutorialBtn">Child Tutorial</button>
+      <button class="btn-secondary" id="openTutorTutorialBtn">Tutor Tutorial</button>
       <button class="btn-primary" id="showKidViewBtn">Kid View</button>
       <button class="btn-lav" id="showAdultViewBtn">Parent / Teacher View</button>
     </div>
@@ -710,7 +791,7 @@
         <div class="hero-grid">
           <div>
             <h1>📋 Parent / Teacher View</h1>
-            <p>This report view shows progress, patterns, and notes you can review together. Use the PDF button to save or print the report.</p>
+            <p>This report view shows weekly progress, patterns, notes, and coaching takeaways you can review together. Use the PDF button to save or print the weekly report.</p>
             <div class="hero-stats">
               <div class="stat"><strong id="adultStarsStat">0</strong><span>Total Stars</span></div>
               <div class="stat"><strong id="adultCompletedStat">0</strong><span>Completed Missions</span></div>
@@ -720,7 +801,112 @@
           </div>
           <div>
             <div class="row" style="justify-content:flex-end;">
-              <button class="btn-sun" id="printReportBtn">Generate PDF Report</button>
+              <button class="btn-sun" id="printReportBtn">Generate Weekly PDF Report</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="stack">
+        <section class="card">
+          <h2>Weekly Overview</h2>
+          <p class="sub">A one-page summary of the past 7 days, including engagement, completion, and coaching notes.</p>
+          <div class="grid-4">
+            <div class="metric"><strong id="metricMissionCount">0</strong><span>Today's Missions</span></div>
+            <div class="metric"><strong id="metricGearCount">0</strong><span>Gear Items Packed</span></div>
+            <div class="metric"><strong id="metricCheckpointCount">0</strong><span>Checkpoints Reached</span></div>
+            <div class="metric"><strong id="metricRecapCount">0</strong><span>Campfire Entries</span></div>
+          </div>
+          <div class="grid-4" style="margin-top:12px;">
+            <div class="metric"><strong id="weeklyDaysActive">0</strong><span>Active Days</span></div>
+            <div class="metric"><strong id="weeklyMissionsDone">0</strong><span>Missions Finished</span></div>
+            <div class="metric"><strong id="weeklyExpeditions">0</strong><span>Expeditions Started</span></div>
+            <div class="metric"><strong id="weeklyStars">0</strong><span>Stars This Week</span></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Weekly Progress Snapshot</h2>
+          <p class="sub">Each bar shows finished missions for a day in the current 7-day window.</p>
+          <div id="weeklyBars" class="grid-4"></div>
+        </section>
+
+        <section class="card">
+          <h2>Key Takeaways</h2>
+          <div class="grid-3">
+            <div class="choice">
+              <strong>Strength</strong>
+              <div id="weeklyStrength" class="tiny" style="margin-top:8px;">—</div>
+            </div>
+            <div class="choice">
+              <strong>Support Need</strong>
+              <div id="weeklySupportNeed" class="tiny" style="margin-top:8px;">—</div>
+            </div>
+            <div class="choice">
+              <strong>Suggested Next Step</strong>
+              <div id="weeklyNextStep" class="tiny" style="margin-top:8px;">—</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Current Missions</h2>
+          <p class="sub">A simple snapshot of what is planned and what is finished.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mission</th>
+                  <th>Status</th>
+                  <th>Best Place</th>
+                  <th>Outdoor Bonus</th>
+                  <th>Gear Progress</th>
+                </tr>
+              </thead>
+              <tbody id="adultMissionTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Recent Notes</h2>
+          <p class="sub">Campfire recaps and adult observations for sharing at school or home.</p>
+          <div class="grid-2">
+            <div>
+              <label for="adultNoteInput">Add parent / teacher note</label>
+              <textarea id="adultNoteInput" placeholder="Example: Started reading more easily after picking a quiet outdoor spot."></textarea>
+            </div>
+            <div>
+              <label for="childStrengthInput">Strength / support idea</label>
+              <textarea id="childStrengthInput" placeholder="Example: Responds well to short timers and nature-themed rewards."></textarea>
+            </div>
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <button class="btn-lav" id="saveAdultNoteBtn">Save Note</button>
+          </div>
+          <div class="note-list" id="adultNotesList"></div>
+        </section>
+
+        <section class="card">
+          <h2>Recent Adventure Activity</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Adventure Win</th>
+                </tr>
+              </thead>
+              <tbody id="adultWinsTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+          <div>
+            <div class="row" style="justify-content:flex-end;">
+              <button class="btn-sun" id="printReportBtn">Generate Weekly PDF Report</button>
             </div>
           </div>
         </div>
@@ -793,8 +979,195 @@
     </div>
   </div>
 
-  <script>
-    const STORAGE_KEY = 'trail-guide-v2';
+  
+  <div id="tutorialModal" class="tutorial-modal" aria-hidden="true">
+    <div class="tutorial-backdrop" id="tutorialBackdrop"></div>
+    <div class="tutorial-panel">
+      <div class="row" style="justify-content:space-between; align-items:flex-start;">
+        <div>
+          <div class="badge" id="tutorialAudienceBadge">🧭 Tutorial</div>
+          <h2 id="tutorialTitle" style="margin:10px 0 6px;">Welcome</h2>
+          <p id="tutorialBody" class="sub" style="max-width:700px;">Learn how the app works.</p>
+        </div>
+        <button class="btn-berry" id="closeTutorialBtn">Close</button>
+      </div>
+      <div id="tutorialBullets" class="tutorial-bullets"></div>
+      <div class="tutorial-progress-wrap">
+        <div id="tutorialProgressText" class="tiny">Step 1 of 1</div>
+        <div class="tutorial-progress"><div id="tutorialProgressBar"></div></div>
+      </div>
+      <div class="row" style="justify-content:space-between; margin-top:14px;">
+        <button class="btn-secondary" id="tutorialPrevBtn">Back</button>
+        <div class="row">
+          <button class="btn-secondary" id="tutorialRestartBtn">Restart</button>
+          <button class="btn-primary" id="tutorialNextBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    const STORAGE_KEY = 'trail-guide-v4';
+
+
+    const TUTORIALS = {
+      child: [
+        {
+          title: 'Welcome to Trail Guide',
+          body: 'This app turns work time into a small outdoor-style adventure. The goal is to pick a few missions, start them, and finish the day with a short recap.',
+          bullets: ['Pick only a few things each day.', 'Starting counts, not just finishing.', 'Short work sessions are enough.']
+        },
+        {
+          title: 'Step 1: Today\'s Trail',
+          body: 'Add up to 3 missions. A mission is one important thing to do today.',
+          bullets: ['Use simple mission names.', 'Choose the best place to do it.', 'Pick an outdoor bonus to help your brain get ready.']
+        },
+        {
+          title: 'Step 2: Pack Your Gear',
+          body: 'For each mission, add what you need to get started.',
+          bullets: ['Think tools, first steps, or reminders.', 'Examples: pencil, worksheet, quiet spot.', 'This makes the mission feel smaller and easier.']
+        },
+        {
+          title: 'Step 3: Expedition Mode',
+          body: 'Choose one mission and do a short timer.',
+          bullets: ['Start with 10 minutes if the mission feels hard.', 'Use “done looks like” to pick a tiny goal.', 'Press “I Reached My Checkpoint” when you make progress.']
+        },
+        {
+          title: 'Step 4: Campfire Recap and Wins',
+          body: 'At the end, notice what went well and what felt tricky.',
+          bullets: ['Adventure Wins show effort during the day.', 'Campfire Recap helps you remember what worked.', 'Stars, badges, and your animal guide grow as you keep going.']
+        }
+      ],
+      tutor: [
+        {
+          title: 'Tutor Overview',
+          body: 'This tool supports executive functioning with a predictable routine: plan, break down, focus, reflect, and review.',
+          bullets: ['Use the same order each session.', 'Praise starting and persistence.', 'Keep the child view playful and low-pressure.']
+        },
+        {
+          title: 'Recommended Session Flow',
+          body: 'Guide the child through the app in a consistent sequence.',
+          bullets: ['1. Add 1 to 3 missions.', '2. Add gear or first steps.', '3. Run one short expedition.', '4. Mark checkpoint or completion.', '5. End with campfire recap.']
+        },
+        {
+          title: 'How to Coach Each Feature',
+          body: 'Each section maps to an executive function skill.',
+          bullets: ['Today’s Trail = planning and prioritizing.', 'Pack Your Gear = task breakdown and working memory support.', 'Expedition Mode = task initiation and sustained attention.', 'Campfire Recap = reflection and self-monitoring.']
+        },
+        {
+          title: 'Using the Parent / Teacher View',
+          body: 'The adult view is the reporting and coaching side of the app.',
+          bullets: ['Review weekly bars for daily consistency.', 'Use notes to record supports that helped.', 'Generate the weekly PDF for meetings, records, or handoff.']
+        },
+        {
+          title: 'Best Practices',
+          body: 'Keep the experience supportive, short, and concrete.',
+          bullets: ['Reduce missions if the child is overloaded.', 'Prefer tiny goals over perfect goals.', 'Reuse supports that clearly improve starting.', 'Review patterns weekly rather than reacting to one hard day.']
+        }
+      ]
+    };
+
+    function formatShortDate(d){
+      const dt = new Date(d);
+      return dt.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+
+    function getTodaySummary(){
+      return {
+        date: new Date().toISOString().slice(0,10),
+        missionsPlanned: state.missions.length,
+        missionsDone: state.missions.filter(m => m.done).length,
+        expeditions: countByType(state, 'expedition-start'),
+        checkpoints: countByType(state, 'checkpoint'),
+        stars: state.stars,
+        recapCount: state.recap.length,
+        notesCount: state.adultNotes.length
+      };
+    }
+
+    function syncWeeklyHistory(){
+      const today = new Date().toISOString().slice(0,10);
+      const summary = getTodaySummary();
+      const idx = state.weeklyHistory.findIndex(x => x.date === today);
+      if(idx >= 0){
+        state.weeklyHistory[idx] = summary;
+      } else {
+        state.weeklyHistory.push(summary);
+      }
+      state.weeklyHistory = state.weeklyHistory.sort((a,b) => a.date.localeCompare(b.date)).slice(-14);
+    }
+
+    function getWeeklyWindow(){
+      return state.weeklyHistory.slice(-7);
+    }
+
+    function getWeeklyInsights(week){
+      const totalDone = week.reduce((s,x) => s + (x.missionsDone || 0), 0);
+      const totalExp = week.reduce((s,x) => s + (x.expeditions || 0), 0);
+      const activeDays = week.filter(x => (x.missionsPlanned || x.expeditions || x.recapCount)).length;
+      const totalCheckpoints = week.reduce((s,x) => s + (x.checkpoints || 0), 0);
+
+      let strength = 'Still building a pattern. Keep sessions short and consistent.';
+      let support = 'Use the same sequence each day so the routine becomes familiar.';
+      let nextStep = 'Aim for one mission and one expedition tomorrow.';
+
+      if(totalExp >= 5){
+        strength = 'Task initiation is improving. The child is starting work sessions more often this week.';
+      }
+      if(totalDone >= 5){
+        strength = 'Follow-through is a clear strength this week. More missions are being finished after starting.';
+      }
+      if(activeDays <= 2){
+        support = 'Consistency is the biggest need right now. Try shorter, more frequent check-ins.';
+      } else if(totalCheckpoints < totalExp){
+        support = 'Staying with a task after starting still needs support. Use smaller “done looks like” goals.';
+      } else if(totalDone < totalExp){
+        support = 'Completion may improve with more gear planning before expeditions.';
+      }
+
+      if(totalExp < 4){
+        nextStep = 'Next week, aim to start at least one 10-minute expedition on 4 different days.';
+      } else if(totalDone < 4){
+        nextStep = 'Next week, focus on finishing one tiny mission per active day.';
+      } else {
+        nextStep = 'Next week, keep the routine and gradually increase independence during setup.';
+      }
+
+      return { activeDays, totalDone, totalExp, strength, support, nextStep };
+    }
+
+    let tutorialMode = 'child';
+    let tutorialStep = 0;
+
+    function openTutorial(mode){
+      tutorialMode = mode;
+      tutorialStep = 0;
+      renderTutorial();
+      const modal = document.getElementById('tutorialModal');
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      state.tutorialSeen[mode] = true;
+      saveState();
+    }
+
+    function closeTutorial(){
+      const modal = document.getElementById('tutorialModal');
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function renderTutorial(){
+      const steps = TUTORIALS[tutorialMode];
+      const step = steps[tutorialStep];
+      document.getElementById('tutorialAudienceBadge').textContent = tutorialMode === 'child' ? '🌲 Child Tutorial' : '📋 Tutor Tutorial';
+      document.getElementById('tutorialTitle').textContent = step.title;
+      document.getElementById('tutorialBody').textContent = step.body;
+      document.getElementById('tutorialBullets').innerHTML = step.bullets.map(x => `<div class="tutorial-bullet">${escapeHtml(x)}</div>`).join('');
+      document.getElementById('tutorialProgressText').textContent = `Step ${tutorialStep + 1} of ${steps.length}`;
+      document.getElementById('tutorialProgressBar').style.width = `${((tutorialStep + 1) / steps.length) * 100}%`;
+      document.getElementById('tutorialPrevBtn').disabled = tutorialStep === 0;
+      document.getElementById('tutorialNextBtn').textContent = tutorialStep === steps.length - 1 ? 'Finish' : 'Next';
+    }
 
     const BADGES = [
       { id:'starter', icon:'🥾', name:'Trail Starter', desc:'Pack 1 mission', earned: s => s.missions.length >= 1 },
@@ -819,6 +1192,8 @@
       wins: [],
       recap: [],
       adultNotes: [],
+      weeklyHistory: [],
+      tutorialSeen: { child: false, tutor: false },
       timerMinutes: 10,
       timerSecondsLeft: 600,
       timerRunning: false,
@@ -879,6 +1254,14 @@
     const adultNotesList = document.getElementById('adultNotesList');
     const adultNoteInput = document.getElementById('adultNoteInput');
     const childStrengthInput = document.getElementById('childStrengthInput');
+    const weeklyDaysActive = document.getElementById('weeklyDaysActive');
+    const weeklyMissionsDone = document.getElementById('weeklyMissionsDone');
+    const weeklyExpeditions = document.getElementById('weeklyExpeditions');
+    const weeklyStars = document.getElementById('weeklyStars');
+    const weeklyBars = document.getElementById('weeklyBars');
+    const weeklyStrength = document.getElementById('weeklyStrength');
+    const weeklySupportNeed = document.getElementById('weeklySupportNeed');
+    const weeklyNextStep = document.getElementById('weeklyNextStep');
 
     function loadState(){
       try {
@@ -908,6 +1291,8 @@
           wins: state.wins.slice(-20),
           recap: state.recap.slice(0, 10),
           adultNotes: state.adultNotes.slice(0, 20),
+          weeklyHistory: state.weeklyHistory.slice(-14),
+          tutorialSeen: state.tutorialSeen || { child: false, tutor: false },
           todaySeed: today
         };
         saveState();
@@ -1123,6 +1508,28 @@
       metricCheckpointCount.textContent = countByType(state, 'checkpoint');
       metricRecapCount.textContent = state.recap.length;
 
+      const week = getWeeklyWindow();
+      const insights = getWeeklyInsights(week);
+      weeklyDaysActive.textContent = insights.activeDays;
+      weeklyMissionsDone.textContent = insights.totalDone;
+      weeklyExpeditions.textContent = insights.totalExp;
+      weeklyStars.textContent = week.length ? Math.max(0, week[week.length - 1].stars - (week[0].stars || 0)) : 0;
+
+      weeklyBars.innerHTML = week.length ? week.map(day => {
+        const height = Math.min(100, (day.missionsDone || 0) * 30 + 4);
+        return `
+          <div class="week-bar-card">
+            <strong>${escapeHtml(formatShortDate(day.date))}</strong>
+            <div class="week-bar"><div class="week-bar-fill" style="height:${height}%"></div></div>
+            <div class="tiny">${day.missionsDone || 0} done</div>
+          </div>
+        `;
+      }).join('') : '<div class="empty">Use the app across a few days to build a weekly report.</div>';
+
+      weeklyStrength.textContent = insights.strength;
+      weeklySupportNeed.textContent = insights.support;
+      weeklyNextStep.textContent = insights.nextStep;
+
       adultMissionTable.innerHTML = state.missions.length ? state.missions.map(m => {
         const gearDone = m.gear.filter(g => g.done).length;
         return `
@@ -1159,6 +1566,7 @@
 
     function renderAll(){
       ensureToday();
+      syncWeeklyHistory();
       renderTrail();
       renderMissionSelectors();
       renderMissions();
@@ -1251,6 +1659,27 @@
       document.getElementById('adultView').classList.toggle('active', which === 'adult');
     }
 
+    document.getElementById('openChildTutorialBtn').addEventListener('click', () => openTutorial('child'));
+    document.getElementById('openTutorTutorialBtn').addEventListener('click', () => openTutorial('tutor'));
+    document.getElementById('closeTutorialBtn').addEventListener('click', closeTutorial);
+    document.getElementById('tutorialBackdrop').addEventListener('click', closeTutorial);
+    document.getElementById('tutorialPrevBtn').addEventListener('click', () => {
+      tutorialStep = Math.max(0, tutorialStep - 1);
+      renderTutorial();
+    });
+    document.getElementById('tutorialNextBtn').addEventListener('click', () => {
+      const steps = TUTORIALS[tutorialMode];
+      if(tutorialStep >= steps.length - 1){
+        closeTutorial();
+      } else {
+        tutorialStep += 1;
+        renderTutorial();
+      }
+    });
+    document.getElementById('tutorialRestartBtn').addEventListener('click', () => {
+      tutorialStep = 0;
+      renderTutorial();
+    });
     document.getElementById('showKidViewBtn').addEventListener('click', () => showView('kid'));
     document.getElementById('showAdultViewBtn').addEventListener('click', () => showView('adult'));
 
@@ -1375,6 +1804,8 @@
         wins: keepWins,
         recap: keepRecap,
         adultNotes: keepNotes,
+        weeklyHistory: state.weeklyHistory.slice(-14),
+        tutorialSeen: state.tutorialSeen || { child: false, tutor: false },
         todaySeed: new Date().toDateString()
       };
       clearInterval(timerInterval);
@@ -1415,6 +1846,9 @@
     }
 
     renderAll();
+    if(!state.tutorialSeen.child){
+      setTimeout(() => openTutorial('child'), 300);
+    }
   </script>
 </body>
 </html>

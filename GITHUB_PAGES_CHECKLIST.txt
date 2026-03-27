@@ -1,0 +1,9 @@
+GitHub Pages quick checklist
+
+[ ] Repository created
+[ ] Files uploaded to repository root
+[ ] Pages enabled from main branch /(root)
+[ ] Waited for deployment to finish
+[ ] Opened published URL
+[ ] Tested install prompt
+[ ] Tested offline reload after first load

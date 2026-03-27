@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4d7d52" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Trail Guide" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <title>Trail Guide Adventure Planner</title>
   <style>
     :root{
@@ -40,6 +47,30 @@
       justify-content:flex-end;
       margin-bottom:12px;
       flex-wrap:wrap;
+    }
+
+
+    .install-banner{
+      display:none;
+      background:linear-gradient(135deg, #4d7d52, #6f9a5f);
+      color:white;
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      margin-bottom:12px;
+      padding:14px 16px;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .install-banner.show{
+      display:flex;
+    }
+    .install-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
     }
 
     .toolbar{
@@ -654,6 +685,16 @@
 </head>
 <body>
   <div class="app">
+    <div class="install-banner" id="installBanner">
+      <div>
+        <strong>Install Trail Guide</strong>
+        <div class="tiny" style="color:rgba(255,255,255,0.92); margin-top:4px;">Add this app to your home screen for quick access and better offline use.</div>
+      </div>
+      <div class="install-actions">
+        <button class="btn-sun" id="installAppBtn">Install App</button>
+        <button class="btn-secondary" id="dismissInstallBtn">Not Now</button>
+      </div>
+    </div>
     <details class="toolbar" id="toolbarMenu">
       <summary>
         <span>🧰 Tools & Views</span>
@@ -1026,6 +1067,50 @@
 <script>
     const STORAGE_KEY = 'trail-guide-v4';
 
+
+
+    let deferredInstallPrompt = null;
+
+    function setInstallBannerVisibility(show){
+      const banner = document.getElementById('installBanner');
+      if(!banner) return;
+      banner.classList.toggle('show', !!show);
+    }
+
+    function isStandaloneMode(){
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+
+    async function tryInstallApp(){
+      if(!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      try {
+        await deferredInstallPrompt.userChoice;
+      } catch {}
+      deferredInstallPrompt = null;
+      setInstallBannerVisibility(false);
+    }
+
+    function registerPWA(){
+      if('serviceWorker' in navigator){
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+      }
+
+      window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        if(!isStandaloneMode()){
+          setInstallBannerVisibility(true);
+        }
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        setInstallBannerVisibility(false);
+      });
+    }
 
     const TUTORIALS = {
       child: [
@@ -1502,7 +1587,11 @@
           state.timerRunning = false;
           if(!Number.isFinite(state.timerSecondsLeft)) state.timerSecondsLeft = state.timerMinutes * 60;
           saveState();
-          renderAll();
+          document.getElementById('installAppBtn').addEventListener('click', tryInstallApp);
+    document.getElementById('dismissInstallBtn').addEventListener('click', () => setInstallBannerVisibility(false));
+    registerPWA();
+
+    renderAll();
           showView('adult');
           const backupNotice = document.getElementById('backupNotice');
           if(backupNotice){

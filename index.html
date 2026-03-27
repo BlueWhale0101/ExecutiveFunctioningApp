@@ -391,6 +391,11 @@
     .view{ display:none; }
     .view.active{ display:block; }
 
+    #kidView{ display:none; }
+    #adultView{ display:none; }
+    #kidView.active{ display:block !important; }
+    #adultView.active{ display:block !important; }
+
     .metric{
       border:1px solid var(--line);
       border-radius:16px;
@@ -511,6 +516,9 @@
       margin-top:12px;
     }
     .tutorial-bullet{
+      border-left:4px solid var(--forest);
+      padding-left:14px;
+      background:#f4f8f2;
       border:1px solid var(--line);
       border-radius:14px;
       padding:10px 12px;
@@ -550,6 +558,27 @@
       overflow:hidden;
       margin:8px 0;
     }
+    
+    .tutorial-spotlight{
+      position:fixed;
+      border:3px solid #f3c95a;
+      border-radius:22px;
+      box-shadow:0 0 0 9999px rgba(16, 24, 18, 0.45), 0 0 0 8px rgba(243, 201, 90, 0.20);
+      pointer-events:none;
+      z-index:999;
+      display:none;
+      transition:all .2s ease;
+    }
+    .tutorial-callout{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#eef7ec;
+      border:1px solid #dcead9;
+      color:var(--forest);
+      font-weight:700;
+    }
+
     .week-bar-fill{
       width:100%;
       background:linear-gradient(180deg, var(--sky), var(--forest));
@@ -588,8 +617,8 @@
 <body>
   <div class="app">
     <div class="topbar">
-      <button class="btn-secondary" id="openChildTutorialBtn">Child Tutorial</button>
-      <button class="btn-secondary" id="openTutorTutorialBtn">Tutor Tutorial</button>
+      <button class="btn-secondary" id="openChildTutorialBtn" data-tutorial-target="child-tutorial-button">Child Tutorial</button>
+      <button class="btn-secondary" id="openTutorTutorialBtn" data-tutorial-target="tutor-tutorial-button">Tutor Tutorial</button>
       <button class="btn-primary" id="showKidViewBtn">Kid View</button>
       <button class="btn-lav" id="showAdultViewBtn">Parent / Teacher View</button>
     </div>
@@ -617,7 +646,7 @@
 
       <div class="layout">
         <div class="stack">
-          <section class="card">
+          <section class="card" data-tutorial-target="missions">
             <h2>🐾 Today’s Trail</h2>
             <p class="sub">Choose your most important missions for today. You can have up to 3.</p>
 
@@ -652,7 +681,7 @@
             <div class="mission-list" id="missionList"></div>
           </section>
 
-          <section class="card">
+          <section class="card" data-tutorial-target="gear">
             <h2>🎒 Pack Your Gear</h2>
             <p class="sub">Pick one mission and list the tools or steps needed to get started.</p>
 
@@ -687,7 +716,7 @@
             </div>
           </section>
 
-          <section class="card">
+          <section class="card" data-tutorial-target="animal">
             <h2>🐻 Animal Guide</h2>
             <p class="sub">A trail buddy appears based on today’s progress.</p>
             <div class="animal-guide">
@@ -699,13 +728,13 @@
             </div>
           </section>
 
-          <section class="card">
+          <section class="card" data-tutorial-target="badges">
             <h2>🏅 Trail Badges</h2>
             <p class="sub">Earn badges for effort, not perfection.</p>
             <div class="badge-list" id="badgeList"></div>
           </section>
 
-          <section class="card">
+          <section class="card" data-tutorial-target="expedition">
             <h2>⏱️ Expedition Mode</h2>
             <p class="sub">Choose a short trail and work on one mission.</p>
 
@@ -743,7 +772,7 @@
             </div>
           </section>
           
-          <details class="card collapsible" id="campfireDetails" open>
+          <details class="card collapsible" id="campfireDetails" open data-tutorial-target="campfire">
             <summary><span>🔥 Campfire Recap</span><span class="tiny">Open / close</span></summary>
             <div class="collapse-content">
 
@@ -771,7 +800,7 @@
             </div>
           </details>
 
-          <details class="card collapsible" id="winsDetails" open>
+          <details class="card collapsible" id="winsDetails" open data-tutorial-target="wins">
             <summary><span>⭐ Adventure Wins</span><span class="tiny">Open / close</span></summary>
             <div class="collapse-content">
 
@@ -786,7 +815,7 @@
       <p class="footer-note">Everything saves in this browser, so the trail will still be here next time.</p>
     </div>
 
-    <div id="adultView" class="view">
+    <div id="adultView" class="view" data-tutorial-target="adult-view">
       <section class="hero" style="background:linear-gradient(135deg, #5d5a95, #7f74b7 45%, #8fc0d8);">
         <div class="hero-grid">
           <div>
@@ -801,14 +830,14 @@
           </div>
           <div>
             <div class="row" style="justify-content:flex-end;">
-              <button class="btn-sun" id="printReportBtn">Generate Weekly PDF Report</button>
+              <button class="btn-sun" id="printReportBtn" data-tutorial-target="print-report">Generate Weekly PDF Report</button>
             </div>
           </div>
         </div>
       </section>
 
       <div class="stack">
-        <section class="card">
+        <section class="card" data-tutorial-target="weekly-overview">
           <h2>Weekly Overview</h2>
           <p class="sub">A one-page summary of the past 7 days, including engagement, completion, and coaching notes.</p>
           <div class="grid-4">
@@ -831,7 +860,7 @@
           <div id="weeklyBars" class="grid-4"></div>
         </section>
 
-        <section class="card">
+        <section class="card" data-tutorial-target="takeaways">
           <h2>Key Takeaways</h2>
           <div class="grid-3">
             <div class="choice">
@@ -868,7 +897,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-tutorial-target="adult-notes">
           <h2>Recent Notes</h2>
           <p class="sub">Campfire recaps and adult observations for sharing at school or home.</p>
           <div class="grid-2">
@@ -906,7 +935,7 @@
   </div>
           <div>
             <div class="row" style="justify-content:flex-end;">
-              <button class="btn-sun" id="printReportBtn">Generate Weekly PDF Report</button>
+              <button class="btn-sun" id="printReportBtn" data-tutorial-target="print-report">Generate Weekly PDF Report</button>
             </div>
           </div>
         </div>
@@ -942,7 +971,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-tutorial-target="adult-notes">
           <h2>Recent Notes</h2>
           <p class="sub">Campfire recaps and adult observations for sharing at school or home.</p>
           <div class="grid-2">
@@ -980,6 +1009,7 @@
   </div>
 
   
+  <div id="tutorialSpotlight" class="tutorial-spotlight" aria-hidden="true"></div>
   <div id="tutorialModal" class="tutorial-modal" aria-hidden="true">
     <div class="tutorial-backdrop" id="tutorialBackdrop"></div>
     <div class="tutorial-panel">
@@ -989,8 +1019,9 @@
           <h2 id="tutorialTitle" style="margin:10px 0 6px;">Welcome</h2>
           <p id="tutorialBody" class="sub" style="max-width:700px;">Learn how the app works.</p>
         </div>
-        <button class="btn-berry" id="closeTutorialBtn">Close</button>
+        
       </div>
+      <div id="tutorialCallout" class="tutorial-callout"></div>
       <div id="tutorialBullets" class="tutorial-bullets"></div>
       <div class="tutorial-progress-wrap">
         <div id="tutorialProgressText" class="tiny">Step 1 of 1</div>
@@ -1001,6 +1032,7 @@
         <div class="row">
           <button class="btn-secondary" id="tutorialRestartBtn">Restart</button>
           <button class="btn-primary" id="tutorialNextBtn">Next</button>
+          <button class="btn-berry" id="closeTutorialBtn">Done</button>
         </div>
       </div>
     </div>
@@ -1015,54 +1047,88 @@
         {
           title: 'Welcome to Trail Guide',
           body: 'This app turns work time into a small outdoor-style adventure. The goal is to pick a few missions, start them, and finish the day with a short recap.',
+          target: 'child-tutorial-button',
+          callout: 'You can reopen this tutorial any time from the top bar.',
           bullets: ['Pick only a few things each day.', 'Starting counts, not just finishing.', 'Short work sessions are enough.']
         },
         {
           title: 'Step 1: Today\'s Trail',
           body: 'Add up to 3 missions. A mission is one important thing to do today.',
+          target: 'missions',
+          callout: 'This is where the child plans the day and limits it to a few important jobs.',
           bullets: ['Use simple mission names.', 'Choose the best place to do it.', 'Pick an outdoor bonus to help your brain get ready.']
         },
         {
           title: 'Step 2: Pack Your Gear',
           body: 'For each mission, add what you need to get started.',
+          target: 'gear',
+          callout: 'Use this section to turn a big job into tools, first steps, and reminders.',
           bullets: ['Think tools, first steps, or reminders.', 'Examples: pencil, worksheet, quiet spot.', 'This makes the mission feel smaller and easier.']
         },
         {
           title: 'Step 3: Expedition Mode',
           body: 'Choose one mission and do a short timer.',
+          target: 'expedition',
+          callout: 'This is the main focus tool. The child should usually start here after packing gear.',
           bullets: ['Start with 10 minutes if the mission feels hard.', 'Use “done looks like” to pick a tiny goal.', 'Press “I Reached My Checkpoint” when you make progress.']
         },
         {
-          title: 'Step 4: Campfire Recap and Wins',
+          title: 'Step 4: Campfire Recap',
           body: 'At the end, notice what went well and what felt tricky.',
-          bullets: ['Adventure Wins show effort during the day.', 'Campfire Recap helps you remember what worked.', 'Stars, badges, and your animal guide grow as you keep going.']
+          target: 'campfire',
+          callout: 'This reflection step helps the child remember strategies that worked.',
+          bullets: ['Say one thing that went well.', 'Name one tricky moment.', 'End with something to feel proud of.']
+        },
+        {
+          title: 'Step 5: Adventure Wins',
+          body: 'Adventure Wins show effort during the day.',
+          target: 'wins',
+          callout: 'This section helps the child see that effort, starts, and checkpoints matter too.',
+          bullets: ['Wins appear as the child uses the app.', 'Use them to praise progress, not perfection.', 'Stars, badges, and the animal guide grow over time.']
         }
       ],
       tutor: [
         {
           title: 'Tutor Overview',
           body: 'This tool supports executive functioning with a predictable routine: plan, break down, focus, reflect, and review.',
+          target: 'tutor-tutorial-button',
+          callout: 'Open this tutorial when you want a quick reminder of the intended flow.',
           bullets: ['Use the same order each session.', 'Praise starting and persistence.', 'Keep the child view playful and low-pressure.']
         },
         {
           title: 'Recommended Session Flow',
           body: 'Guide the child through the app in a consistent sequence.',
+          target: 'missions',
+          callout: 'Most sessions should begin in the child view with Today’s Trail.',
           bullets: ['1. Add 1 to 3 missions.', '2. Add gear or first steps.', '3. Run one short expedition.', '4. Mark checkpoint or completion.', '5. End with campfire recap.']
         },
         {
           title: 'How to Coach Each Feature',
           body: 'Each section maps to an executive function skill.',
+          target: 'gear',
+          callout: 'Use gear planning as the bridge between intention and action.',
           bullets: ['Today’s Trail = planning and prioritizing.', 'Pack Your Gear = task breakdown and working memory support.', 'Expedition Mode = task initiation and sustained attention.', 'Campfire Recap = reflection and self-monitoring.']
         },
         {
           title: 'Using the Parent / Teacher View',
           body: 'The adult view is the reporting and coaching side of the app.',
-          bullets: ['Review weekly bars for daily consistency.', 'Use notes to record supports that helped.', 'Generate the weekly PDF for meetings, records, or handoff.']
+          target: 'adult-view',
+          callout: 'This view is best for reviewing trends, capturing notes, and preparing handoff.',
+          bullets: ['Switch here after the child completes a session.', 'Review weekly bars for daily consistency.', 'Look for patterns before making changes.']
         },
         {
-          title: 'Best Practices',
-          body: 'Keep the experience supportive, short, and concrete.',
-          bullets: ['Reduce missions if the child is overloaded.', 'Prefer tiny goals over perfect goals.', 'Reuse supports that clearly improve starting.', 'Review patterns weekly rather than reacting to one hard day.']
+          title: 'Weekly Report and Notes',
+          body: 'The adult view includes a weekly summary, notes, and a PDF report option.',
+          target: 'weekly-overview',
+          callout: 'Use the weekly overview and notes together so the report has both numbers and context.',
+          bullets: ['Review strengths and support needs.', 'Add notes about what helped.', 'Use the PDF report for meetings or records.']
+        },
+        {
+          title: 'Generate the PDF Report',
+          body: 'When ready, use the print button from the adult view.',
+          target: 'print-report',
+          callout: 'This opens the browser print dialog, where you can save the report as a PDF.',
+          bullets: ['Switch to Parent / Teacher View first.', 'Check the weekly layout before printing.', 'Save to PDF or print on paper.']
         }
       ]
     };
@@ -1136,16 +1202,67 @@
       return { activeDays, totalDone, totalExp, strength, support, nextStep };
     }
 
+
+    function setTutorialTarget(targetName){
+      const spotlight = document.getElementById('tutorialSpotlight');
+      const target = targetName ? document.querySelector(`[data-tutorial-target="${targetName}"]`) : null;
+      if(!target){
+        spotlight.style.display = 'none';
+        return;
+      }
+
+      if(targetName === 'adult-view' || targetName === 'weekly-overview' || targetName === 'print-report'){
+        showView('adult');
+      } else if(targetName === 'missions' || targetName === 'gear' || targetName === 'expedition' || targetName === 'campfire' || targetName === 'wins' || targetName === 'child-tutorial-button'){
+        showView('kid');
+      }
+
+      if(targetName === 'campfire'){
+        const d = document.getElementById('campfireDetails');
+        if(d) d.open = true;
+      }
+      if(targetName === 'wins'){
+        const d = document.getElementById('winsDetails');
+        if(d) d.open = true;
+      }
+
+      const refreshedTarget = document.querySelector(`[data-tutorial-target="${targetName}"]`);
+      if(!refreshedTarget){
+        spotlight.style.display = 'none';
+        return;
+      }
+
+      refreshedTarget.scrollIntoView({ behavior:'smooth', block:'center' });
+
+      setTimeout(() => {
+        const rect = refreshedTarget.getBoundingClientRect();
+        spotlight.style.display = 'block';
+        spotlight.style.top = `${Math.max(8, rect.top - 8)}px`;
+        spotlight.style.left = `${Math.max(8, rect.left - 8)}px`;
+        spotlight.style.width = `${Math.min(window.innerWidth - 16, rect.width + 16)}px`;
+        spotlight.style.height = `${Math.min(window.innerHeight - 16, rect.height + 16)}px`;
+      }, 160);
+    }
+
+    function clearTutorialTarget(){
+      const spotlight = document.getElementById('tutorialSpotlight');
+      spotlight.style.display = 'none';
+    }
+
     let tutorialMode = 'child';
     let tutorialStep = 0;
 
     function openTutorial(mode){
       tutorialMode = mode;
       tutorialStep = 0;
-      renderTutorial();
+      const campfire = document.getElementById('campfireDetails');
+      const wins = document.getElementById('winsDetails');
+      if(campfire) campfire.open = false;
+      if(wins) wins.open = false;
       const modal = document.getElementById('tutorialModal');
       modal.classList.add('open');
       modal.setAttribute('aria-hidden', 'false');
+      renderTutorial();
       state.tutorialSeen[mode] = true;
       saveState();
     }
@@ -1154,6 +1271,12 @@
       const modal = document.getElementById('tutorialModal');
       modal.classList.remove('open');
       modal.setAttribute('aria-hidden', 'true');
+      clearTutorialTarget();
+      const campfire = document.getElementById('campfireDetails');
+      const wins = document.getElementById('winsDetails');
+      if(campfire) campfire.open = false;
+      if(wins) wins.open = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderTutorial(){
@@ -1162,11 +1285,26 @@
       document.getElementById('tutorialAudienceBadge').textContent = tutorialMode === 'child' ? '🌲 Child Tutorial' : '📋 Tutor Tutorial';
       document.getElementById('tutorialTitle').textContent = step.title;
       document.getElementById('tutorialBody').textContent = step.body;
-      document.getElementById('tutorialBullets').innerHTML = step.bullets.map(x => `<div class="tutorial-bullet">${escapeHtml(x)}</div>`).join('');
+      document.getElementById('tutorialCallout').textContent = step.callout || 'Follow the highlighted section in the app.';
+      const emojiMap = {
+        'missions':'🧭',
+        'gear':'🎒',
+        'expedition':'⏱️',
+        'campfire':'🔥',
+        'wins':'⭐',
+        'adult-view':'📋',
+        'weekly-overview':'📊',
+        'print-report':'🖨️',
+        'child-tutorial-button':'🌲',
+        'tutor-tutorial-button':'📘'
+      };
+      const emoji = emojiMap[step.target] || '🌿';
+      document.getElementById('tutorialBullets').innerHTML = step.bullets.map((x,i) => `<div class="tutorial-bullet"><div style="display:flex; gap:8px; align-items:flex-start;"><span>${emoji}</span><div>${escapeHtml(x)}</div></div></div>`).join('');
       document.getElementById('tutorialProgressText').textContent = `Step ${tutorialStep + 1} of ${steps.length}`;
       document.getElementById('tutorialProgressBar').style.width = `${((tutorialStep + 1) / steps.length) * 100}%`;
       document.getElementById('tutorialPrevBtn').disabled = tutorialStep === 0;
       document.getElementById('tutorialNextBtn').textContent = tutorialStep === steps.length - 1 ? 'Finish' : 'Next';
+      setTutorialTarget(step.target);
     }
 
     const BADGES = [
@@ -1661,7 +1799,10 @@
 
     document.getElementById('openChildTutorialBtn').addEventListener('click', () => openTutorial('child'));
     document.getElementById('openTutorTutorialBtn').addEventListener('click', () => openTutorial('tutor'));
-    document.getElementById('closeTutorialBtn').addEventListener('click', closeTutorial);
+    document.getElementById('closeTutorialBtn').addEventListener('click', () => {
+      showView(tutorialMode === 'tutor' ? 'adult' : 'kid');
+      closeTutorial();
+    });
     document.getElementById('tutorialBackdrop').addEventListener('click', closeTutorial);
     document.getElementById('tutorialPrevBtn').addEventListener('click', () => {
       tutorialStep = Math.max(0, tutorialStep - 1);
@@ -1670,6 +1811,7 @@
     document.getElementById('tutorialNextBtn').addEventListener('click', () => {
       const steps = TUTORIALS[tutorialMode];
       if(tutorialStep >= steps.length - 1){
+        showView(tutorialMode === 'tutor' ? 'adult' : 'kid');
         closeTutorial();
       } else {
         tutorialStep += 1;
@@ -1680,6 +1822,14 @@
       tutorialStep = 0;
       renderTutorial();
     });
+    window.addEventListener('resize', () => {
+      const modal = document.getElementById('tutorialModal');
+      if(modal.classList.contains('open')){
+        const step = TUTORIALS[tutorialMode][tutorialStep];
+        setTutorialTarget(step.target);
+      }
+    });
+
     document.getElementById('showKidViewBtn').addEventListener('click', () => showView('kid'));
     document.getElementById('showAdultViewBtn').addEventListener('click', () => showView('adult'));
 
